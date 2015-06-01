@@ -1,0 +1,54 @@
+# Copyright 2014 Joukou Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+[Unit]
+Description=SkyDNS
+Documentation=https://github.com/skynetservices/skydns
+After=docker.service
+Requires=docker.service
+After=etcd2.service
+Requires=etcd2.service
+
+# Large start timeout is to allow for pulling down Docker images from quay.io
+TimeoutStartSec=12min
+TimeoutStopSec=15
+
+Restart=on-failure
+RestartSec=10s
+
+EnvironmentFile=/run/docker.env
+
+Environment="SKYDNS_NAMESERVERS=8.8.8.8:53,8.8.4.4:53"
+Environment="SKYDNS_DOMAIN=skydns.local"
+Environment="SKYDNS_ENVIRONMENT=dev"
+Environment="ETCD_MACHINES=http://${DOCKER_BRIDGE_IPV4}:4001"
+
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+
+ExecStart=/usr/bin/docker run --name %p \
+-e "ETCD_MACHINES=${ETCD_MACHINES}" \
+-e "SKYDNS_NAMESERVERS=${SKYDNS_NAMESERVERS}" \
+-e "SKYDNS_DOMAIN=${SKYDNS_DOMAIN}" \
+-h i%i.%p.${SKYDNS_ENVIRONMENT}.${SKYDNS_DOMAIN} \
+-p ${DOCKER_BRIDGE_IPV4}:53:53/udp \
+skynetservices/skydns:2.4.0c
+
+ExecStop=/usr/bin/docker kill %p
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Conflicts=skydns@*.service
+Global=true
