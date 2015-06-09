@@ -1,0 +1,56 @@
+# Copyright 2015 HP Software
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+[Unit]
+Description=SkyDNS
+Documentation=https://github.com/skynetservices/skydns
+After=docker.service
+Requires=docker.service
+After=etcd2.service
+Requires=etcd2.service
+
+[Service]
+# Large start timeout is to allow for pulling down Docker images from quay.io
+TimeoutStartSec=12min
+TimeoutStopSec=15
+
+Restart=on-failure
+RestartSec=5
+
+EnvironmentFile=/etc/environment
+
+Environment="SKYDNS_RELEASE=2.5.0b"
+Environment="SKYDNS_NAMESERVERS=8.8.8.8:53,8.8.4.4:53"
+Environment="SKYDNS_DOMAIN=skydns.local"
+Environment="SKYDNS_ENVIRONMENT=dev"
+Environment="SKYDNS_ADDR=0.0.0.0:53"
+
+ExecStartPre=-/usr/bin/docker kill skydns
+ExecStartPre=-/usr/bin/docker rm skydns
+
+ExecStart=/usr/bin/docker run --name skydns \
+-e "ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001" \
+-e "SKYDNS_NAMESERVERS=${SKYDNS_NAMESERVERS}" \
+-e "SKYDNS_DOMAIN=${SKYDNS_DOMAIN}" \
+-e "SKYDNS_ADDR=${SKYDNS_ADDR}" \
+-h local.dns.${SKYDNS_ENVIRONMENT}.${SKYDNS_DOMAIN} \
+-p 53:53/udp -p 53:53/tcp \
+skynetservices/skydns:${SKYDNS_RELEASE}
+
+ExecStop=/usr/bin/docker kill skydns
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
