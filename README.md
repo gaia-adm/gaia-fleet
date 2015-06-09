@@ -1,8 +1,8 @@
-h1. Gaia Fleet
+# Gaia Fleet
 
 This repository contains a set of services for Gaia ADM project. 
 
-h2. Initilization
+## Initilization
 
 Once you have a CoreOS cluster up and running, you will need to deploy `skydns.service` and `registrator.service` to the cluster.
 
