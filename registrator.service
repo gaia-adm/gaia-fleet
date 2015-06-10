@@ -14,10 +14,8 @@
 [Unit]
 Description=Registrator
 Documentation=https://github.com/gliderlabs/registrator
-After=docker.service
-Requires=docker.service
-After=etcd.service
-Requires=etcd.service
+After=skydns.service
+Requires=skydns.service
 
 [Service]
 # Large start timeout is to allow for pulling down Docker images from quay.io
@@ -36,8 +34,8 @@ ExecStartPre=-/usr/bin/docker rm registrator
 
 ExecStart=/usr/bin/docker run --name registrator \
 -v /var/run/docker.sock:/tmp/docker.sock \
--h ${COREOS_PRIVATE_IPV4} \
 gliderlabs/registrator:${REGISTRATOR_RELEASE} skydns2://${COREOS_PRIVATE_IPV4}:4001/${SKYDNS_DOMAIN}
+
 
 ExecStop=/usr/bin/docker kill registrator
 

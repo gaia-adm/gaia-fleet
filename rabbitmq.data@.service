@@ -15,14 +15,6 @@
 [Unit]
 Description=RabbitMQ Data Container
 
-# Requirements
-Requires=etcd.service
-Requires=docker.service
-
-# Dependency ordering
-After=docker.service
-After=etcd.service
-
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
