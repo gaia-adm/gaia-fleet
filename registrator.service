@@ -34,7 +34,8 @@ ExecStartPre=-/usr/bin/docker rm registrator
 
 ExecStart=/usr/bin/docker run --name registrator \
 -v /var/run/docker.sock:/tmp/docker.sock \
-gliderlabs/registrator:${REGISTRATOR_RELEASE} skydns2://${COREOS_PRIVATE_IPV4}:4001/${SKYDNS_DOMAIN}
+-h ${COREOS_PRIVATE_IPV4} \
+gliderlabs/registrator:${REGISTRATOR_RELEASE} -internal skydns2://${COREOS_PRIVATE_IPV4}:4001/${SKYDNS_DOMAIN}
 
 
 ExecStop=/usr/bin/docker kill registrator
