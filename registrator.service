@@ -16,8 +16,8 @@ Description=Registrator
 Documentation=https://github.com/gliderlabs/registrator
 After=docker.service
 Requires=docker.service
-After=etcd2.service
-Requires=etcd2.service
+After=etcd.service
+Requires=etcd.service
 
 [Service]
 # Large start timeout is to allow for pulling down Docker images from quay.io

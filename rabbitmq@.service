@@ -17,13 +17,13 @@ Description=RabbitMQ
 Documentation=http://www.rabbitmq.com/documentation.html
 
 # Requirements
-Requires=etcd2.service
+Requires=etcd.service
 Requires=docker.service
 Requires=rabbitmq.data@%i.service
 
 # Dependency ordering
 After=docker.service
-After=etcd2.service
+After=etcd.service
 After=rabbitmq.data@%i.service
 
 [Service]
