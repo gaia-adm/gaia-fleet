@@ -21,3 +21,7 @@ For example:
 /usr/bin/docker run --name rabbitmq-%i -p 5672:5672 -p 15672:15672 -e "SERVICE_NAME=rabbitmq-%i" -e "SERVICE_TAGS=master" gaiaadm/rabbitmq:3.5.3-1
 
 ```
+
+## DNS setup
+
+If you are using [our fork](https://github.com/gaia-adm/coreos-vagrant) of [coreos-vagrant](https://github.com/coreos/coreos-vagrant), you do not need to specify DNS for every docker container you are running. The appropriate DNS server will be setup automatically for you container.
