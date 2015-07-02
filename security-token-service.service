@@ -36,7 +36,7 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop sts
-ExecStop=-/usr/bin/docker rm sts
+ExecStartPre=-/usr/bin/docker rm sts
 ExecStart=/usr/bin/docker run \
 -u jetty --name sts \
 -e "SERVICE_NAME=sts" -e "SERVICE_TAGS=master" \
