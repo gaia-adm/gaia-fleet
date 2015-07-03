@@ -13,14 +13,14 @@
 # limitations under the License.
 
 [Unit]
-Description=Gaia Metrics Gateway Service
-Documentation=https://github.com/gaia-adm/metrics-gateway-service
+Description=Gaia Events Indexer Service
+Documentation=https://github.com/gaia-adm/events-indexer
 
 # Requirements
 
 # Dependency ordering
 After=rabbitmq@master.service
-After=security-token-service.service
+After=influxdb.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -41,18 +41,17 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill mgs
-ExecStop=-/usr/bin/docker rm mgs
-
+ExecStartPre=-/usr/bin/docker kill evi
+ExecStartPre=-/usr/bin/docker rm evi
 ExecStart=/usr/bin/docker run \
--u jetty --name mgs \
--e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
--e "SERVICE_NAME=mgs" -e "SERVICE_TAGS=master" \
--p 9002:8080 \
-gaiaadm/mgs
+--name evi \
+-e "SERVICE_NAME=evi" -e "SERVICE_TAGS=master" \
+-p 8080:8080 -p 8081:8081 \
+gaiaadm/event-indexer \
+java -Ddw.influxdb.host=influxdb.skydns.local -Ddw.rabbitmq.host=rabbitmq-master.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password= -jar /data/target/events-indexer-1.0-SNAPSHOT.jar server
 
 # Stop
-ExecStop=/usr/bin/docker stop mgs
+ExecStop=/usr/bin/docker stop evi
 
 [Install]
 WantedBy=multi-user.target

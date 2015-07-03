@@ -13,14 +13,7 @@
 # limitations under the License.
 
 [Unit]
-Description=Gaia Metrics Gateway Service
-Documentation=https://github.com/gaia-adm/metrics-gateway-service
-
-# Requirements
-
-# Dependency ordering
-After=rabbitmq@master.service
-After=security-token-service.service
+Description=InfluxDB Data Container
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -37,26 +30,21 @@ EnvironmentFile=/etc/environment
 
 # Restart policy
 Restart=on-failure
-RestartSec=20s
+RestartSec=5s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill mgs
-ExecStop=-/usr/bin/docker rm mgs
-
+ExecStartPre=-/usr/bin/docker kill influxdb.data
+ExecStartPre=-/usr/bin/docker rm influxdb.data
 ExecStart=/usr/bin/docker run \
--u jetty --name mgs \
--e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
--e "SERVICE_NAME=mgs" -e "SERVICE_TAGS=master" \
--p 9002:8080 \
-gaiaadm/mgs
+-v /data/db \
+--name influxdb.data \
+busybox /bin/true
 
 # Stop
-ExecStop=/usr/bin/docker stop mgs
+ExecStop=-/usr/bin/docker stop influxdb.data
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
-

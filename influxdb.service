@@ -13,14 +13,14 @@
 # limitations under the License.
 
 [Unit]
-Description=Gaia Metrics Gateway Service
-Documentation=https://github.com/gaia-adm/metrics-gateway-service
+Description=InfluxDB v.0.9
+Documentation=https://influxdb.com/docs/v0.9/introduction/overview.html
 
 # Requirements
+Requires=influxdb.data.service
 
 # Dependency ordering
-After=rabbitmq@master.service
-After=security-token-service.service
+After=influxdb.data.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -41,22 +41,22 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill mgs
-ExecStop=-/usr/bin/docker rm mgs
-
+ExecStartPre=-/usr/bin/docker kill influxdb
+ExecStartPre=-/usr/bin/docker rm influxdb
 ExecStart=/usr/bin/docker run \
--u jetty --name mgs \
--e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
--e "SERVICE_NAME=mgs" -e "SERVICE_TAGS=master" \
--p 9002:8080 \
-gaiaadm/mgs
+--name influxdb \
+--volumes-from influxdb.data \
+-e "PRE_CREATE_DB=mydb1" \
+-e "SERVICE_NAME=influxdb" -e "SERVICE_TAGS=master" \
+-p 8083:8083 -p 8086:8086 \
+tutum/influxdb
 
+# --volumes-from influxdb.data \
 # Stop
-ExecStop=/usr/bin/docker stop mgs
+ExecStop=/usr/bin/docker stop influxdb
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
-
+MachineOf=influxdb.data.service
