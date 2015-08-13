@@ -17,6 +17,7 @@ Description=Gaia Metrics Gateway Service
 Documentation=https://github.com/gaia-adm/metrics-gateway-service
 
 # Requirements
+Requires=security-token-service.service
 
 # Dependency ordering
 After=rabbitmq@master.service
