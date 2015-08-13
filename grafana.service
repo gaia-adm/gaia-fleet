@@ -47,7 +47,7 @@ ExecStart=/usr/bin/docker run \
 --name grafana \
 -i \
 -p 3000:3000 \
-grafana/grafana
+gaiaadm/grafana-preconfigured
 
 # Stop
 ExecStop=/usr/bin/docker stop grafana
