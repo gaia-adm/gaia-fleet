@@ -19,7 +19,7 @@ Documentation=https://github.com/gaia-adm/security-token-service
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
-TimeoutStartSec=10min
+TimeoutStartSec=20min
 TimeoutStopSec=15
 
 # Change killmode from "control-group" to "none" to let Docker remove
