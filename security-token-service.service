@@ -19,7 +19,7 @@ Documentation=https://github.com/gaia-adm/security-token-service
 # Requirements
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 #Bug had been reported here: https://github.com/docker/docker/issues/9718
-Requires=metrics-gateway-service.service
+#Requires=metrics-gateway-service.service
 
 # Dependency ordering
 After=metrics-gateway-service.service
@@ -45,7 +45,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop sts
 ExecStartPre=-/usr/bin/docker rm sts
-ExecStartPre=-/usr/bin/flock /home/core/pull.lock /usr/bin/timeout 10m /usr/bin/docker pull gaiaadm/sts
+ExecStartPre=-/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/sts"
 ExecStart=/usr/bin/docker run \
 -u jetty --name sts \
 -p 9001:8080 -p 9093:9093 \
