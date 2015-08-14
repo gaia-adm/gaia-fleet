@@ -16,14 +16,6 @@
 Description=Gaia Security Token Service
 Documentation=https://github.com/gaia-adm/security-token-service
 
-# Requirements
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-#Bug had been reported here: https://github.com/docker/docker/issues/9718
-#Requires=metrics-gateway-service.service
-
-# Dependency ordering
-After=metrics-gateway-service.service
-
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
