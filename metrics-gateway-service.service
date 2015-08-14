@@ -46,7 +46,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop mgs
 ExecStartPre=-/usr/bin/docker rm mgs
-ExecStartPre=-/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/mgs"
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/mgs"
 ExecStart=/usr/bin/docker run \
 -u jetty --name mgs \
 -e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
