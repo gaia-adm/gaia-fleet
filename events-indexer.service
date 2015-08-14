@@ -43,7 +43,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop evi
 ExecStartPre=-/usr/bin/docker rm evi
-ExecStartPre=/usr/bin/flock -m 600 "/home/core/pull.lock" -c  "/usr/bin/docker pull gaiaadm/event-indexer"
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c  "/usr/bin/docker pull gaiaadm/event-indexer"
 ExecStart=/usr/bin/docker run \
 --name evi \
 -e "SERVICE_NAME=evi" -e "SERVICE_TAGS=master" \
