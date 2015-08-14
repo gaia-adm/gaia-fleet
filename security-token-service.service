@@ -44,6 +44,8 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop sts
+ExecStartPre=-/usr/bin/docker rm sts
+ExecStartPre=-/usr/bin/flock /home/core/pull.lock /usr/bin/timeout 10m /usr/bin/docker pull gaiaadm/sts
 ExecStop=-/usr/bin/docker rm sts
 ExecStart=/usr/bin/docker run \
 -u jetty --name sts \
