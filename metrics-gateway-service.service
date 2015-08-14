@@ -23,8 +23,8 @@ Documentation=https://github.com/gaia-adm/metrics-gateway-service
 #Requires=events-indexer.service
 
 # Dependency ordering
-After=events-indexer.service
-After=security-token-service.service
+#After=events-indexer.service
+#After=security-token-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
