@@ -13,7 +13,7 @@ fleetctl start skydns
 fleetctl start registrator
 ```
 
-After you have [SkyDNS](https://github.com/gliderlabs/registrator) and [Registrator](https://github.com/gliderlabs/registrator) up and running on each cluster node, you can now deploy and auto-register any other fleet service. 
+After you have [SkyDNS](https://github.com/skynetservices/skydns) and [Registrator](https://github.com/gliderlabs/registrator) up and running on each cluster node, you can now deploy and auto-register any other fleet service.
 You do not need to do anything special, while running your service in Docker, beside specifying name with `--name` parameter or setting `SERVICE_NAME` environment variable.
 
 For example:
