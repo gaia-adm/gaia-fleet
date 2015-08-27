@@ -13,8 +13,12 @@
 # limitations under the License.
 
 [Unit]
-Description=Docker Mirror V1 data
+Description=Docker Mirror V1
 Documentation=https://github.com/docker/docker-registry
+
+# Dependency ordering
+After=docker-mirror-data@%i.service
+Requires=docker-mirror-data@%i.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -31,22 +35,31 @@ EnvironmentFile=/etc/environment
 
 # Restart policy
 Restart=on-failure
-RestartSec=5s
+RestartSec=10s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill docker.mirror.data.%i
-ExecStartPre=-/usr/bin/docker rm docker.mirror.data.%i
+ExecStartPre=-/usr/bin/docker kill docker-mirror-%i
+ExecStartPre=-/usr/bin/docker rm docker-mirror-%i
 ExecStart=/usr/bin/docker run \
--v /data/docker-mirror \
---name docker.mirror.data.%i \
-busybox /bin/true
+--name docker-mirror-%i \
+--volumes-from docker-mirror-data-%i \
+-e http_proxy=${http_proxy} \
+-e https_proxy=${https_proxy} \
+-e STORAGE_PATH=/data/docker-mirror \
+-e STANDALONE=false \
+-e MIRROR_SOURCE=https://registry-1.docker.io \
+-e MIRROR_SOURCE_INDEX=https://index.docker.io \
+-e SERVICE_NAME=docker-mirror \
+-e SERVICE_TAGS=%i \
+-p 5000:5000 registry:0.9.1
 
 # Stop
-ExecStop=/usr/bin/docker stop docker.mirror.data.%i
+ExecStop=/usr/bin/docker stop docker-mirror-%i
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-Conflicts=docker.mirror.data@*.service
+Conflicts=docker-mirror@*.service
+MachineOf=docker-mirror-data@%i.service
