@@ -50,6 +50,8 @@ ExecStart=/usr/bin/docker run \
 -e STANDALONE=false \
 -e MIRROR_SOURCE=https://registry-1.docker.io \
 -e MIRROR_SOURCE_INDEX=https://index.docker.io \
+-e SERVICE_NAME=docker-mirror \
+-e SERVICE_TAGS=%i \
 -p 5000:5000 registry:0.9.1
 
 # Stop
