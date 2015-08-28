@@ -37,6 +37,7 @@ RestartSec=5s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill docker-mirror-data-%i
 ExecStartPre=-/usr/bin/docker rm docker-mirror-data-%i
+ExecStartPre=/usr/bin/docker pull busybox
 ExecStart=/usr/bin/docker run \
 -v /data/docker-mirror \
 --name docker-mirror-data-%i \

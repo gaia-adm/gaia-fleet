@@ -41,6 +41,7 @@ RestartSec=10s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill docker-mirror-%i
 ExecStartPre=-/usr/bin/docker rm docker-mirror-%i
+ExecStartPre=/usr/bin/docker pull registry:0.9.1
 ExecStart=/usr/bin/docker run \
 --name docker-mirror-%i \
 --volumes-from docker-mirror-data-%i \
