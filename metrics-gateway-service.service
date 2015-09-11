@@ -42,11 +42,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop mgs
 ExecStartPre=-/usr/bin/docker rm mgs
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# According to this it had been solved in docker 1.7.1 (now we are on 1.6.2), worth trying upgraqde: https://github.com/docker/docker/pull/14193
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/mgs"
+ExecStartPre=/usr/bin/docker pull gaiaadm/mgs
 ExecStart=/usr/bin/docker run \
 -u jetty --name mgs \
 -e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
