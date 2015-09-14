@@ -13,8 +13,8 @@
 # limitations under the License.
 
 [Unit]
-Description=Gaia CircleCI tests processor
-Documentation=https://github.com/gaia-adm/circleci-tests-processor
+Description=Gaia sample weather processor
+Documentation=https://github.com/gaia-adm/sample-weather-processor
 # HACK: Dependency ordering due to lack of Amazon elastic file system. We require
 # result-upload-service.service to be started already and run on the same machine.
 After=result-upload-service.service
@@ -39,20 +39,20 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/bin/mkdir /upload
-ExecStartPre=-/usr/bin/docker stop circleci-tests-processor
-ExecStartPre=-/usr/bin/docker rm circleci-tests-processor
-ExecStartPre=/usr/bin/docker pull gaiaadm/circleci-tests-processor
+ExecStartPre=-/usr/bin/docker stop sample-weather-processor
+ExecStartPre=-/usr/bin/docker rm sample-weather-processor
+ExecStartPre=/usr/bin/docker pull gaiaadm/sample-weather-processor
 ExecStart=/usr/bin/docker run \
 -e AMQ_USER="admin" \
 -e AMQ_PASSWORD="" \
 -e AMQ_SERVER="rabbitmq-master.skydns.local:5672" \
 -e MGS_SERVER="mgs.skydns.local:8080" \
 -v "/upload:/upload" \
---name circleci-tests-processor \
-gaiaadm/circleci-tests-processor
+--name sample-weather-processor \
+gaiaadm/sample-weather-processor
 
 # Stop
-ExecStop=/usr/bin/docker stop circleci-tests-processor
+ExecStop=/usr/bin/docker stop sample-weather-processor
 
 [Install]
 WantedBy=multi-user.target
