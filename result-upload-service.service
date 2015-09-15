@@ -17,6 +17,8 @@ Description=Gaia Result Upload Service
 Documentation=https://github.com/gaia-adm/result-upload-service
 After=rabbitmq@master.service
 After=security-token-service.service
+Requires=rabbitmq@master.service
+Requires=security-token-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
