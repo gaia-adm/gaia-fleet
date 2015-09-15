@@ -50,6 +50,7 @@ ExecStart=/usr/bin/docker run \
 -e "SERVICE_NAME=result-upload-service" \
 -e "SERVICE_TAGS=master" \
 -e STORAGE_PATH="/upload" \
+-e LOG_LEVEL="DEBUG" \
 -v "/upload:/upload" \
 --name result-upload-service \
 gaiaadm/result-upload-service
