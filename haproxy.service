@@ -38,6 +38,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill haproxy
 ExecStartPre=-/usr/bin/docker rm haproxy
+ExecStartPre=/usr/bin/docker pull gaiaadm/haproxy
 ExecStart=/usr/bin/docker run \
  --privileged \
  --name haproxy \

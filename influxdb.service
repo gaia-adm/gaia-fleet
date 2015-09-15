@@ -43,6 +43,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill influxdb
 ExecStartPre=-/usr/bin/docker rm influxdb
+ExecStartPre=/usr/bin/docker pull tutum/influxdb
 ExecStart=/usr/bin/docker run \
 --name influxdb \
 --volumes-from influxdb.data \

@@ -43,6 +43,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill grafana
 ExecStartPre=-/usr/bin/docker rm grafana
+ExecStartPre=/usr/bin/docker pull gaiaadm/grafana-preconfigured
 ExecStart=/usr/bin/docker run \
 --name grafana \
 -i \

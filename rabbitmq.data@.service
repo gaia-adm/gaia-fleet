@@ -36,6 +36,7 @@ RestartSec=5s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill rabbitmq.data.%i
 ExecStartPre=-/usr/bin/docker rm rabbitmq.data.%i
+ExecStartPre=/usr/bin/docker pull busybox
 ExecStart=/usr/bin/docker run \
 -v /var/lib/rabbitmq \
 --name rabbitmq.data.%i busybox /bin/true

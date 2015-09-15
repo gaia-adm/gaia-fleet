@@ -31,6 +31,7 @@ Environment="SKYDNS_DOMAIN=skydns.local"
 
 ExecStartPre=-/usr/bin/docker kill registrator
 ExecStartPre=-/usr/bin/docker rm registrator
+ExecStartPre=/usr/bin/docker pull gliderlabs/registrator:${REGISTRATOR_RELEASE}
 
 ExecStart=/usr/bin/docker run --name registrator \
 -v /var/run/docker.sock:/tmp/docker.sock \
