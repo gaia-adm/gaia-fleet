@@ -16,11 +16,10 @@
 Description=Gaia Events Indexer Service
 Documentation=https://github.com/gaia-adm/events-indexer
 
-# Requirements
-
-# Dependency ordering
 After=rabbitmq@master.service
 After=influxdb.service
+Wants=rabbitmq@master.service
+Wants=influxdb.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

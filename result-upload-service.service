@@ -15,10 +15,13 @@
 [Unit]
 Description=Gaia Result Upload Service
 Documentation=https://github.com/gaia-adm/result-upload-service
+
+After=registrator.service
 After=rabbitmq@master.service
 After=security-token-service.service
-Requires=rabbitmq@master.service
-Requires=security-token-service.service
+Wants=registrator.service
+Wants=rabbitmq@master.service
+Wants=security-token-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

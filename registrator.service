@@ -14,8 +14,9 @@
 [Unit]
 Description=Registrator
 Documentation=https://github.com/gliderlabs/registrator
+
 After=skydns.service
-Requires=skydns.service
+Wants=skydns.service
 
 [Service]
 # Large start timeout is to allow for pulling down Docker images from quay.io

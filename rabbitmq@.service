@@ -16,11 +16,10 @@
 Description=RabbitMQ
 Documentation=http://www.rabbitmq.com/documentation.html
 
-# Requirements
-Requires=rabbitmq.data@%i.service
-
-# Dependency ordering
 After=rabbitmq.data@%i.service
+After=registrator.service
+Requires=rabbitmq.data@%i.service
+Wants=registrator.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

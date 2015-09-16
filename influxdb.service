@@ -16,11 +16,10 @@
 Description=InfluxDB v.0.9
 Documentation=https://influxdb.com/docs/v0.9/introduction/overview.html
 
-# Requirements
-Requires=influxdb.data.service
-
-# Dependency ordering
 After=influxdb.data.service
+After=registrator.service
+Requires=influxdb.data.service
+Wants=registrator.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

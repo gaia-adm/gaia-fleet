@@ -16,6 +16,9 @@
 Description=Gaia Security Token Service
 Documentation=https://github.com/gaia-adm/security-token-service
 
+After=registrator.service
+Wants=registrator.service
+
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
