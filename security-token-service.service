@@ -48,6 +48,7 @@ ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pu
 ExecStart=/usr/bin/docker run \
 -u jetty --name sts \
 -p 9001:8080 -p 9093:9093 \
+-e "etcdUrl=http://${COREOS_PRIVATE_IPV4}:4001" \
 -e "SERVICE_8080_NAME=sts" -e "SERVICE_8080_TAGS=master" \
 -e "SERVICE_9093_NAME=stsdb" -e "SERVICE_9093_TAGS=master" \
 gaiaadm/sts
@@ -57,3 +58,4 @@ ExecStop=/usr/bin/docker stop sts
 
 [Install]
 WantedBy=multi-user.target
+
