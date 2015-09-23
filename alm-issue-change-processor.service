@@ -14,7 +14,7 @@
 
 [Unit]
 Description=Gaia Jenkins tests processor
-Documentation=https://github.com/gaia-adm/agm-issue-change-processor
+Documentation=https://github.com/gaia-adm/alm-issue-change-processor
 # HACK: Dependency ordering due to lack of Amazon elastic file system. We require
 # result-upload-service.service to be started already and run on the same machine.
 After=registrator.service
@@ -44,13 +44,13 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/bin/mkdir /upload
-ExecStartPre=-/usr/bin/docker stop agm-issue-change-processor
-ExecStartPre=-/usr/bin/docker rm agm-issue-change-processor
+ExecStartPre=-/usr/bin/docker stop alm-issue-change-processor
+ExecStartPre=-/usr/bin/docker rm alm-issue-change-processor
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/agm-issue-change-processor"
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/alm-issue-change-processor"
 ExecStart=/usr/bin/docker run \
 -e AMQ_USER="admin" \
 -e AMQ_PASSWORD="" \
@@ -58,11 +58,11 @@ ExecStart=/usr/bin/docker run \
 -e MGS_SERVER="mgs.skydns.local:8080" \
 -e LOG_LEVEL="DEBUG" \
 -v "/upload:/upload" \
---name agm-issue-change-processor \
-gaiaadm/agm-issue-change-processor
+--name alm-issue-change-processor \
+gaiaadm/alm-issue-change-processor
 
 # Stop
-ExecStop=/usr/bin/docker stop agm-issue-change-processor
+ExecStop=/usr/bin/docker stop alm-issue-change-processor
 
 [Install]
 WantedBy=multi-user.target

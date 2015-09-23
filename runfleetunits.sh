@@ -17,4 +17,6 @@ fleetctl start result-upload-service.service
 fleetctl start sample-weather-processor.service
 fleetctl start circleci-tests-processor.service
 fleetctl start jenkins-tests-processor.service
+fleetctl start alm-issue-change-processor.service
+fleetctl start agm-issue-change-processor.service
 fleetctl start haproxy.service

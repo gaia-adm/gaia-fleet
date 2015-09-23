@@ -16,4 +16,6 @@ fleetctl stop result-upload-service.service
 fleetctl stop sample-weather-processor.service
 fleetctl stop circleci-tests-processor.service
 fleetctl stop jenkins-tests-processor.service
+fleetctl stop alm-issue-change-processor.service
+fleetctl stop agm-issue-change-processor.service
 fleetctl stop haproxy.service

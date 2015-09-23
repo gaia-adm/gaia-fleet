@@ -20,4 +20,6 @@ fleetctl destroy result-upload-service.service
 fleetctl destroy sample-weather-processor.service
 fleetctl destroy circleci-tests-processor.service
 fleetctl destroy jenkins-tests-processor.service 
+fleetctl destroy alm-issue-change-processor.service
+fleetctl destroy agm-issue-change-processor.service
 fleetctl destroy haproxy.service
