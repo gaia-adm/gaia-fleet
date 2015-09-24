@@ -20,6 +20,7 @@ After=influxdb.service
 Wants=influxdb.service
 
 [Service]
+Type=forking
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
 TimeoutStartSec=10min
@@ -39,20 +40,23 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill grafana
-ExecStartPre=-/usr/bin/docker rm grafana
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/grafana-preconfigured"
-ExecStart=/usr/bin/docker run \
---name grafana \
--i \
--p 3000:3000 \
-gaiaadm/grafana-preconfigured
+ExecStartPre=/bin/bash -a -c '/usr/bin/docker inspect grafana > /dev/null || \
+/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/grafana-preconfigured && /usr/bin/docker create \
+    --name grafana \
+    -i \
+    -p 3000:3000 \
+    gaiaadm/grafana-preconfigured"'
+ExecStart=/bin/bash -a -c '/usr/bin/docker start grafana && docker inspect --format \'{{ .State.Pid }}\' grafana > /run/grafana.pid'
+
+PIDFile=/run/grafana.pid
 
 # Stop
 ExecStop=/usr/bin/docker stop grafana
+ExecStopPost=/bin/rm /run/grafana.pid
 
 [Install]
 WantedBy=multi-user.target
