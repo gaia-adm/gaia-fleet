@@ -28,26 +28,25 @@ KillMode=none
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
 
+# Data services must remain active once "started" to avoid confusing systemd to start
+# them each time the consumer service gets restarted (due to failure etc)
+RemainAfterExit=yes
+
 # Restart policy
 Restart=on-failure
 RestartSec=5s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill influxdb.data
-ExecStartPre=-/usr/bin/docker rm influxdb.data
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull busybox"
-ExecStart=/usr/bin/docker run \
+ExecStartPre=/bin/bash -a -c '/usr/bin/docker inspect busybox > /dev/null || /usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull busybox"'
+ExecStart=/bin/bash -a -c '/usr/bin/docker inspect influxdb.data > /dev/null || /usr/bin/docker run \
 -v /data/db \
 --name influxdb.data \
-busybox /bin/true
-
-# Stop
-ExecStop=-/usr/bin/docker stop influxdb.data
+busybox /bin/true'
 
 [Install]
 WantedBy=multi-user.target

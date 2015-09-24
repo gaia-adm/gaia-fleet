@@ -17,7 +17,7 @@ Description=Grafana latest
 Documentation=http://docs.grafana.org/
 
 After=influxdb.service
-Requires=influxdb.service
+Wants=influxdb.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
