@@ -61,3 +61,5 @@ ExecStop=/usr/bin/docker stop haproxy
 WantedBy=multi-user.target
 
 [X-Fleet]
+Global=true
+
