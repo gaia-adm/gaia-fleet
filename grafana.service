@@ -49,6 +49,8 @@ ExecStartPre=/bin/bash -a -c '/usr/bin/docker inspect grafana > /dev/null || \
     --name grafana \
     -i \
     -p 3000:3000 \
+    -e "SERVICE_NAME=grafana" \
+    -e "SERVICE_TAGS=master" \
     gaiaadm/grafana-preconfigured"'
 ExecStart=/bin/bash -a -c '/usr/bin/docker start grafana && docker inspect --format \'{{ .State.Pid }}\' grafana > /run/grafana.pid'
 
