@@ -16,9 +16,7 @@
 Description=InfluxDB v.0.9
 Documentation=https://influxdb.com/docs/v0.9/introduction/overview.html
 
-After=influxdb.data.service
 After=registrator.service
-Requires=influxdb.data.service
 Wants=registrator.service
 
 [Service]
@@ -47,20 +45,22 @@ ExecStartPre=-/usr/bin/docker rm influxdb
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull tutum/influxdb"
-ExecStart=/usr/bin/docker run \
+ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools:${ENVIRON_LOCATION}
+ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools:${ENVIRON_LOCATION}
+ExecStartPre=/opt/bin/gaia-mount.sh influxdb-${ENVIRON}
+ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name influxdb \
---volumes-from influxdb.data \
+-v `/opt/bin/gaia-get-mount-path.sh influxdb-${ENVIRON}`:/data/db \
 -e "PRE_CREATE_DB=mydb1" \
 -e "SERVICE_NAME=influxdb" -e "SERVICE_TAGS=master" \
 -p 8083:8083 -p 8086:8086 \
-tutum/influxdb
+tutum/influxdb'
 
 # --volumes-from influxdb.data \
 # Stop
 ExecStop=/usr/bin/docker stop influxdb
+ExecStop=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
+ExecStopPost=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
 
 [Install]
 WantedBy=multi-user.target
-
-[X-Fleet]
-MachineOf=influxdb.data.service

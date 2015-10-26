@@ -4,10 +4,8 @@ echo "*** Going to stop fleet units"
 
 fleetctl stop skydns.service
 fleetctl stop registrator.service
-fleetctl stop influxdb.data.service
 fleetctl stop influxdb.service
 fleetctl stop grafana.service
-fleetctl stop rabbitmq.data@master.service
 fleetctl stop rabbitmq@master.service
 fleetctl stop events-indexer.service
 fleetctl stop metrics-gateway-service.service

@@ -6,11 +6,8 @@ echo "*** Going to destroy fleet units"
 
 fleetctl destroy skydns.service
 fleetctl destroy registrator.service
-fleetctl destroy influxdb.data.service
 fleetctl destroy influxdb.service
 fleetctl destroy grafana.service
-fleetctl destroy rabbitmq.data@master.service
-fleetctl destroy rabbitmq.data@.service
 fleetctl destroy rabbitmq@master.service
 fleetctl destroy rabbitmq@.service
 fleetctl destroy events-indexer.service

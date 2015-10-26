@@ -16,9 +16,7 @@
 Description=RabbitMQ
 Documentation=http://www.rabbitmq.com/documentation.html
 
-After=rabbitmq.data@%i.service
 After=registrator.service
-Requires=rabbitmq.data@%i.service
 Wants=registrator.service
 
 [Service]
@@ -47,15 +45,21 @@ ExecStartPre=-/usr/bin/docker rm rabbitmq-%i
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/rabbitmq:3.5.3-1"
-ExecStart=/usr/bin/docker run --name rabbitmq-%i \
+ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools:${ENVIRON_LOCATION}
+ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools:${ENVIRON_LOCATION}
+ExecStartPre=/opt/bin/gaia-mount.sh rabbitmq-%i-${ENVIRON}
+ExecStart=/bin/bash -a -c '/usr/bin/docker run \
+--name rabbitmq-%i \
 -p 5672:5672 -p 15672:15672 \
---volumes-from rabbitmq.data.%i \
+-v `/opt/bin/gaia-get-mount-path.sh rabbitmq-%i-${ENVIRON}`:/var/lib/rabbitmq \
 -e "SERVICE_NAME=rabbitmq-%i" \
 -e "SERVICE_TAGS=master" \
-gaiaadm/rabbitmq:3.5.3-1
+gaiaadm/rabbitmq:3.5.3-1'
 
 # Stop
 ExecStop=/usr/bin/docker stop rabbitmq-%i
+ExecStop=-/opt/bin/gaia-unmount.sh rabbitmq-%i-${ENVIRON}
+ExecStopPost=-/opt/bin/gaia-unmount.sh rabbitmq-%i-${ENVIRON}
 
 [Install]
 WantedBy=multi-user.target
@@ -63,5 +67,3 @@ WantedBy=multi-user.target
 [X-Fleet]
 # Don't schedule on the same machine as other RabbitMQ instances
 Conflicts=rabbitmq@*.service
-# Schedule on same mavhine as RabbitMQ Data Container
-MachineOf=rabbitmq.data@%i.service

@@ -5,10 +5,8 @@ fleetctl submit ./*.service
 
 fleetctl start skydns.service
 fleetctl start registrator.service
-fleetctl start influxdb.data.service
 fleetctl start influxdb.service
 fleetctl start grafana.service
-fleetctl start rabbitmq.data@master.service
 fleetctl start rabbitmq@master.service
 fleetctl start events-indexer.service
 fleetctl start security-token-service.service
