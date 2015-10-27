@@ -51,15 +51,15 @@ ExecStartPre=-/usr/bin/docker rm circleci-tests-processor
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/circleci-tests-processor"
-ExecStart=/usr/bin/docker run \
+ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e AMQ_USER="admin" \
 -e AMQ_PASSWORD="" \
 -e AMQ_SERVER="rabbitmq-master.skydns.local:5672" \
 -e MGS_SERVER="mgs.skydns.local:8080" \
 -e LOG_LEVEL="DEBUG" \
--v "/upload:/upload" \
+-v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name circleci-tests-processor \
-gaiaadm/circleci-tests-processor
+gaiaadm/circleci-tests-processor'
 
 # Stop
 ExecStop=/usr/bin/docker stop circleci-tests-processor

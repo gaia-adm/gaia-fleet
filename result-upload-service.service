@@ -50,7 +50,9 @@ ExecStartPre=-/usr/bin/docker rm result-upload-service
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/result-upload-service"
-ExecStart=/usr/bin/docker run \
+ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
+ExecStartPre=/opt/bin/gaia-mount.sh result-upload-${ENVIRON}
+ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -p 9006:8080 \
 -e AMQ_USER="admin" \
 -e AMQ_PASSWORD="" \
@@ -60,12 +62,14 @@ ExecStart=/usr/bin/docker run \
 -e "SERVICE_TAGS=master" \
 -e STORAGE_PATH="/upload" \
 -e LOG_LEVEL="DEBUG" \
--v "/upload:/upload" \
+-v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name result-upload-service \
-gaiaadm/result-upload-service
+gaiaadm/result-upload-service'
 
 # Stop
 ExecStop=/usr/bin/docker stop result-upload-service
+ExecStop=-/opt/bin/gaia-unmount.sh result-upload-${ENVIRON}
+ExecStopPost=-/opt/bin/gaia-unmount.sh result-upload-${ENVIRON}
 
 [Install]
 WantedBy=multi-user.target
