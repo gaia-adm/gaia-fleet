@@ -45,8 +45,8 @@ ExecStartPre=-/usr/bin/docker rm influxdb
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull tutum/influxdb"
-ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools:${ENVIRON_LOCATION}
-ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools:${ENVIRON_LOCATION}
+ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
+ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/opt/bin/gaia-mount.sh influxdb-${ENVIRON}
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name influxdb \
