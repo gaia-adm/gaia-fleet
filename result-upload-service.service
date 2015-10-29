@@ -61,7 +61,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e "SERVICE_NAME=result-upload-service" \
 -e "SERVICE_TAGS=master" \
 -e STORAGE_PATH="/upload" \
--e LOG_LEVEL="DEBUG" \
+-e LOG_LEVEL="INFO" \
 -v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name result-upload-service \
 gaiaadm/result-upload-service'

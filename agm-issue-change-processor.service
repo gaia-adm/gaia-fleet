@@ -56,7 +56,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e AMQ_PASSWORD="" \
 -e AMQ_SERVER="rabbitmq-master.skydns.local:5672" \
 -e MGS_SERVER="mgs.skydns.local:8080" \
--e LOG_LEVEL="DEBUG" \
+-e LOG_LEVEL="INFO" \
 -v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name agm-issue-change-processor \
 gaiaadm/agm-issue-change-processor'
