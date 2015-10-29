@@ -1,0 +1,30 @@
+[Unit]
+Description=Logentries Forwarder
+
+[Service]
+Restart=on-failure
+RestartSec=20s
+
+ExecStartPre=/bin/bash -c \
+             'if [ -n "$(etcdctl get /logentries.com/$(hostname)/lastlog)" ]; then  \
+                echo "Last log date: $(etcdctl get /logentries.com/$(hostname)/lastlog)"; \
+              else \
+                export D="$(date +"%Y-%%m-%%d %%H:%%M:%S")"; \
+                echo "No start date found, collecting logs since $D"; \
+                /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"; true; \
+              fi'
+
+ExecStart=/bin/bash -c "journalctl --since \"$(etcdctl get /logentries.com/$(hostname)/lastlog)\" -o json --boot -f | awk '{ print \"${LOG_KEY}\",$0; fflush(); }' | ncat --ssl api.logentries.com 20000"
+
+ExecStop=/bin/bash -c 'export D="$(date +"%Y-%%m-%%d %%H:%%M:%S")"; \
+                       echo "Setting bookmark to $D"; \
+                       /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"'
+ExecStopPost=/bin/bash -c 'export D="$(date +"%Y-%%m-%%d %%H:%%M:%S")"; \
+                       echo "Setting bookmark to $D"; \
+                       /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"'
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
