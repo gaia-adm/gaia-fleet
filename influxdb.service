@@ -56,7 +56,6 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -p 8083:8083 -p 8086:8086 \
 tutum/influxdb'
 
-# --volumes-from influxdb.data \
 # Stop
 ExecStop=/usr/bin/docker stop influxdb
 ExecStop=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
