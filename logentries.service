@@ -16,6 +16,9 @@
 Description=Logentries Forwarder
 
 [Service]
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
 Restart=on-failure
 RestartSec=20s
 
@@ -27,8 +30,11 @@ ExecStartPre=/bin/bash -c \
                 echo "No start date found, collecting logs since $D"; \
                 /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"; true; \
               fi'
+# also install volume-tools, since it contains newer jq with date functions. volume-tools are necessary everywhere anyway.
+ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
+ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
 
-ExecStart=/bin/bash -c "journalctl --since \"$(etcdctl get /logentries.com/$(hostname)/lastlog)\" -o json --boot -f | awk '{ print \"${LOG_KEY}\",$0; fflush(); }' | ncat --ssl api.logentries.com 20000"
+ExecStart=/bin/bash -c "journalctl --since \"$(etcdctl get /logentries.com/$(hostname)/lastlog)\" -o json --boot -f | /opt/bin/jq -c '{ __REALTIME_TIMESTAMP, DATE_TIME: (.__REALTIME_TIMESTAMP | tonumber / 1000000 | todateiso8601 ), PRIORITY, _UID, _GID, _HOSTNAME, _COMM, _EXE, SYSLOG_IDENTIFIER, _SYSTEMD_UNIT, _PID, MESSAGE }' | awk '{ print \"${LOG_KEY}\",$0; fflush(); }' | ncat --ssl api.logentries.com 20000"
 
 ExecStop=/bin/bash -c 'export D="$(date +"%Y-%%m-%%d %%H:%%M:%S")"; \
                        echo "Setting bookmark to $D"; \
