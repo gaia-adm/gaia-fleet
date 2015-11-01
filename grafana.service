@@ -54,13 +54,11 @@ ExecStartPre=/opt/bin/gaia-mount.sh grafana-${ENVIRON}
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
     --name grafana \
-    -i \
     -p 3000:3000 \
     -e "SERVICE_NAME=grafana" \
     -e "SERVICE_TAGS=master" \
 	-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/lib/grafana:/var/lib/grafana \
 	-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/log/grafana:/var/log/grafana \
-	-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/etc/grafana:/etc/grafana \
     grafana/grafana'
 
 # Stop
