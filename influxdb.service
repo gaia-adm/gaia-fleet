@@ -50,7 +50,7 @@ ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-to
 ExecStartPre=/opt/bin/gaia-mount.sh influxdb-${ENVIRON}
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name influxdb \
--v `/opt/bin/gaia-get-mount-path.sh influxdb-${ENVIRON}`:/data/db \
+-v `/opt/bin/gaia-get-mount-path.sh influxdb-${ENVIRON}`:/data \
 -e "PRE_CREATE_DB=mydb1" \
 -e "SERVICE_NAME=influxdb" -e "SERVICE_TAGS=master" \
 -p 8083:8083 -p 8086:8086 \
