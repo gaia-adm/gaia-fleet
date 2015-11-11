@@ -1,0 +1,62 @@
+# Copyright 2015 HP Software
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[Unit]
+Description=Vault
+Documentation=https://vaultproject.io
+
+After=registrator.service
+Wants=registrator.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+# Large start timeout is to allow for pulling down Docker images from Registry
+TimeoutStartSec=10min
+TimeoutStopSec=15
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Restart policy
+Restart=on-failure
+RestartSec=20s
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill vault
+ExecStartPre=-/usr/bin/docker rm vault
+# This is due to bug in which multiple docker pulls might collide in case of the same base image
+# Bug had been reported here: https://github.com/docker/docker/issues/9718
+# This issue still exists in Docker 1.8.1
+# for now - we sync the collided services (evi, mgs and sts) using flock
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/vault"
+ExecStart=/usr/bin/docker run \
+--name vault \
+--cap-add IPC_LOCK \
+-e ETCD_ADDR=http://${COREOS_PRIVATE_IPV4}:4001 \
+-e VAULT_ADDR=http://127.0.0.1:8200 \
+-e SERVICE_NAME=vault \
+-e SERVICE_TAGS=master \
+-p 8200:8200 \
+gaiaadm/vault
+
+# Stop
+ExecStop=/usr/bin/docker stop vault
+
+[Install]
+WantedBy=multi-user.target
