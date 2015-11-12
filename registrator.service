@@ -27,7 +27,7 @@ Restart=on-failure
 RestartSec=5
 
 EnvironmentFile=/etc/environment
-Environment="REGISTRATOR_RELEASE=v5"
+Environment="REGISTRATOR_RELEASE=v6"
 Environment="SKYDNS_DOMAIN=skydns.local"
 
 ExecStartPre=-/usr/bin/docker kill registrator
