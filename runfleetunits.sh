@@ -7,8 +7,11 @@ fleetctl start skydns.service
 fleetctl start registrator.service
 fleetctl start influxdb.service
 fleetctl start grafana.service
+fleetctl start es.service
+fleetctl start kibana.service
 fleetctl start rabbitmq@master.service
 fleetctl start events-indexer.service
+fleetctl start es-events-indexer.service
 fleetctl start security-token-service.service
 fleetctl start metrics-gateway-service.service
 fleetctl start result-upload-service.service
