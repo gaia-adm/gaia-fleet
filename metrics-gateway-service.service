@@ -49,7 +49,7 @@ ExecStartPre=-/usr/bin/docker rm mgs
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/mgs"
 ExecStart=/usr/bin/docker run \
 -u jetty --name mgs \
--e useAmqp=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
+-e useAmqp=true -e processEs=true -e processInfluxDB=true -e amqpHost=rabbitmq-master.skydns.local -e authServer=sts.skydns.local:8080 \
 -e "SERVICE_NAME=mgs" -e "SERVICE_TAGS=master" \
 -p 9002:8080 \
 gaiaadm/mgs
