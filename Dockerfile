@@ -6,9 +6,9 @@ ENV FLEET_VERSION 0.11.5
 COPY setup.sh /
 COPY proxy.list /
 
-COPY *.service .
-COPY deploy.sh .
-RUN chmod +x deploy.sh
+COPY *.service /
+COPY deploy.sh /
+RUN chmod +x /deploy.sh
 
 # run everything in one RUN command to keep proxy setting between shell commands
 # this will not work if split into multiple RUN commands
