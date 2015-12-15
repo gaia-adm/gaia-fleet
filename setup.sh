@@ -41,6 +41,7 @@ test_proxy()
 test_proxy
 
 # setup proxy in Alpine Linux
+touch /etc/profile.d/proxy.sh
 if [ $http_proxy ]; then
   setup-proxy ${http_proxy}
 fi

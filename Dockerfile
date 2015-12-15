@@ -12,7 +12,7 @@ RUN chmod +x /home/deploy.sh
 
 # run everything in one RUN command to keep proxy setting between shell commands
 # this will not work if split into multiple RUN commands
-RUN sh /home/setup.sh < /home/proxy.list && source /etc/profile.d/proxy.sh || : && echo "PROXY=${http_proxy}" \
+RUN sh /home/setup.sh < /home/proxy.list && source /etc/profile.d/proxy.sh && echo "PROXY=${http_proxy}" \
   && apk update \
   && apk add curl openssl \
   && rm -rf /var/cache/apk/* \
