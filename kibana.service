@@ -13,11 +13,11 @@
 # limitations under the License.
 
 [Unit]
-Description=InfluxDB v.0.9
-Documentation=https://influxdb.com/docs/v0.9/introduction/overview.html
+Description=Kibana 4.3.0 (for ElasticSearch 2.1.0)
+Documentation=https://www.elastic.co/guide/en/kibana/current/releasenotes.html
 
-After=registrator.service
-Wants=registrator.service
+After=es.service
+Wants=es.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -38,28 +38,28 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill influxdb
-ExecStartPre=-/usr/bin/docker rm influxdb
+ExecStartPre=-/usr/bin/docker kill kibana
+ExecStartPre=-/usr/bin/docker rm kibana
+
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull tutum/influxdb"
-ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
-ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
-ExecStartPre=/opt/bin/gaia-mount.sh influxdb-${ENVIRON}
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull kibana:4.3.0"
+
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
---name influxdb \
--v `/opt/bin/gaia-get-mount-path.sh influxdb-${ENVIRON}`:/data \
--e "PRE_CREATE_DB=mydb1" \
--e "SERVICE_NAME=influxdb" -e "SERVICE_TAGS=master" \
--p 8083:8083 -p 8086:8086 \
-tutum/influxdb'
+    --name kibana \
+    -e ELASTICSEARCH_URL=http://es.skydns.local:9200 \
+    -p 5601:5601 \
+    -e "SERVICE_NAME=kibana" \
+    -e "SERVICE_TAGS=master" \
+    kibana:4.3.0'
 
 # Stop
-ExecStop=/usr/bin/docker stop influxdb
-ExecStop=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
-ExecStopPost=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
+ExecStop=/usr/bin/docker stop kibana
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineOf=es.service

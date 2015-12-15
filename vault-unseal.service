@@ -1,0 +1,67 @@
+# Copyright 2015 HP Software
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[Unit]
+Description=Vault unseal
+Documentation=https://vaultproject.io
+
+BindsTo=vault.service
+After=vault.service
+
+[Service]
+Type=oneshot
+Restart=no
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# This is due to bug in which multiple docker pulls might collide in case of the same base image
+# Bug had been reported here: https://github.com/docker/docker/issues/9718
+# This issue still exists in Docker 1.8.1
+# for now - we sync the collided services (evi, mgs and sts) using flock
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/crypt"
+ExecStart=/bin/bash -a -c \
+  'unseal_key=$(/bin/docker run -v /etc/gaia:/etc/gaia --rm=true gaiaadm/crypt crypt get -backend=etcd -endpoint=http://${COREOS_PRIVATE_IPV4}:4001 -secret-keyring /etc/gaia/gaia-secring.gpg /gaia/vault/unseal_key) ; \
+   res=$? ; \
+   if [ $res -eq 0 ]; then \
+     echo "Unseal key found, unsealing vault.."; \
+     for i in {1..2}; do \
+       unseal_out=$(curl -s -X PUT -H "Content-Type: application/json" -d {\\"key\\":\\"$unseal_key\\"} http://${COREOS_PRIVATE_IPV4}:8200/v1/sys/unseal) ; \
+       res=$? ; \
+       echo "Unseal response: $unseal_out" ; \
+       if [ $res -eq 0 ]; then \
+         error=$(echo $unseal_out | jq --raw-output ".errors[0]") ; \
+         if [ -z "$error" -o "$error" = "null" ]; then \
+           echo "Unseal succeeded" ; \
+           exit 0 ; \
+         else \
+           echo "Unseal failed" ; \
+           exit 1 ; \
+         fi \
+       elif [ $res -eq 7 ]; then \
+         echo "Unseal connection timeout" ; \
+         sleep 5; \
+         continue; \
+       else \
+         echo "Unseal failed with exit code $res" ; \
+         exit 1 ; \
+       fi \
+     done \
+   else \
+     echo "Unseal key not found, unsealing will not be performed"; \
+     exit 0 ; \
+   fi'
+
+[X-Fleet]
+MachineOf=vault.service

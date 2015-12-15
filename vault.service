@@ -1,0 +1,79 @@
+# Copyright 2015 HP Software
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[Unit]
+Description=Vault
+Documentation=https://vaultproject.io
+
+After=registrator.service
+Wants=registrator.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+# Large start timeout is to allow for pulling down Docker images from Registry
+TimeoutStartSec=10min
+TimeoutStopSec=15
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Restart policy
+Restart=on-failure
+RestartSec=20s
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill vault
+ExecStartPre=-/usr/bin/docker rm vault
+# This is due to bug in which multiple docker pulls might collide in case of the same base image
+# Bug had been reported here: https://github.com/docker/docker/issues/9718
+# This issue still exists in Docker 1.8.1
+# for now - we sync the collided services (evi, mgs and sts) using flock
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/vault"
+
+# generate SSL certificate for vault.skydns.local and vault-hash.skydns.local
+ExecStartPre=/bin/bash -a -c \
+   'if [ ! -f "/etc/vault/vault.crt" -o ! -f "/etc/vault/vault.key" ]; then \
+      echo "About to generate SSL certificate" ; \
+      mkdir -p /etc/vault \
+      && rm -f /etc/vault/vault.crt /etc/vault/vault.csr /etc/vault/vault.key \
+      && openssl genrsa -out /etc/vault/vault.key 2048 \
+      && openssl req -sha256 -new -subj "/C=/ST=/L=/O=/CN=vault.skydns.local" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:vault.skydns.local,DNS:vault-$(cat /etc/machine-id).skydns.local")) -key /etc/vault/vault.key -out /etc/vault/vault.csr \
+      && openssl x509 -days 3650 -CA /etc/gaia/gaia-ca.crt -CAkey /etc/gaia/gaia-ca.key -set_serial 01 -extensions SAN -extfile <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:vault.skydns.local,DNS:vault-$(cat /etc/machine-id).skydns.local")) -in /etc/vault/vault.csr -req -out /etc/vault/vault.crt ; \
+    else \
+      echo "SSL certificate already exists" ; \
+    fi'
+ExecStart=/bin/bash -a -c \
+    '/usr/bin/docker run \
+    --name vault \
+    --cap-add IPC_LOCK \
+    -v /etc/vault:/etc/vault \
+    -e ETCD_ADDR=http://${COREOS_PRIVATE_IPV4}:4001 \
+    -e VAULT_ADDR=http://127.0.0.1:8200 \
+    -e "VAULT_ADVERTIZE_ADDR=https://vault-$(cat /etc/machine-id).skydns.local:8201" \
+    -e SERVICE_8200_NAME=vault \
+    -e SERVICE_8201_NAME=vault-$(cat /etc/machine-id) \
+    -p 8200:8200 \
+    -p 8201:8201 \
+    gaiaadm/vault'
+
+# Stop
+ExecStop=/usr/bin/docker stop vault
+
+[Install]
+WantedBy=multi-user.target

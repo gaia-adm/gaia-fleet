@@ -13,16 +13,18 @@
 # limitations under the License.
 
 [Unit]
-Description=InfluxDB v.0.9
-Documentation=https://influxdb.com/docs/v0.9/introduction/overview.html
+Description=Gaia ElasticSearch Events Indexer Service
+Documentation=https://github.com/gaia-adm/es-events-indexer
 
-After=registrator.service
-Wants=registrator.service
+After=rabbitmq@master.service
+After=es.service
+Wants=rabbitmq@master.service
+Wants=es.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
-TimeoutStartSec=10min
+TimeoutStartSec=20min
 TimeoutStopSec=15
 
 # Change killmode from "control-group" to "none" to let Docker remove
@@ -38,28 +40,26 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill influxdb
-ExecStartPre=-/usr/bin/docker rm influxdb
+ExecStartPre=-/usr/bin/docker stop esevi
+ExecStartPre=-/usr/bin/docker rm esevi
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull tutum/influxdb"
-ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
-ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
-ExecStartPre=/opt/bin/gaia-mount.sh influxdb-${ENVIRON}
-ExecStart=/bin/bash -a -c '/usr/bin/docker run \
---name influxdb \
--v `/opt/bin/gaia-get-mount-path.sh influxdb-${ENVIRON}`:/data \
--e "PRE_CREATE_DB=mydb1" \
--e "SERVICE_NAME=influxdb" -e "SERVICE_TAGS=master" \
--p 8083:8083 -p 8086:8086 \
-tutum/influxdb'
+# for now - we sync the collided services (esevi, evi, mgs and sts) using flock
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/es-event-indexer"
+ExecStart=/usr/bin/docker run \
+--name esevi \
+-e "SERVICE_NAME=esevi" -e "SERVICE_TAGS=master" \
+-p 8040:8080 -p 8041:8081 \
+gaiaadm/es-event-indexer \
+java -Ddw.es.host=es.skydns.local -Ddw.rabbitmq.host=rabbitmq-master.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password= -jar /data/target/es-events-indexer-1.0-SNAPSHOT.jar server
 
 # Stop
-ExecStop=/usr/bin/docker stop influxdb
-ExecStop=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
-ExecStopPost=-/opt/bin/gaia-unmount.sh influxdb-${ENVIRON}
+ExecStop=/usr/bin/docker stop esevi
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+
