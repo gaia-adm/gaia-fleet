@@ -16,7 +16,7 @@ test_proxy()
   # first try no proxy
   test_connection
 
-  if [ $? -eq 0 ];then
+  if [ $? -eq 0 ]; then
    echo "No proxy is necessary"
    return 0
   else
@@ -41,4 +41,6 @@ test_proxy()
 test_proxy
 
 # setup proxy in Alpine Linux
-setup-proxy ${http_proxy}
+if [ $http_proxy ]; then
+  setup-proxy ${http_proxy}
+fi
