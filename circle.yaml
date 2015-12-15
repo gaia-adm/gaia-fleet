@@ -1,0 +1,12 @@
+machine:
+  services:
+    - docker
+dependencies:
+  override:
+    - docker build -t gaiaadm/gaia-fleet:$CIRCLE_BRANCH .
+    - docker tag gaiaadm/fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM
+deployment:
+  hub:
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push gaiaadm/gaia-fleet
