@@ -4,23 +4,23 @@ machine:
 dependencies:
   override:
     - docker build -t gaiaadm/gaia-fleet .
-    - docker tag gaiaadm/fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM
+    - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM
 deployment:
   production:
     branch: master
     commands:
-      - docker tag gaiaadm/fleet gaiaadm/gaia-fleet:production
+      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:production
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
   develop:
     branch: develop
     commands:
-      - docker tag gaiaadm/fleet gaiaadm/gaia-fleet:develop
+      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:develop
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
   feature:
     branch: /feature_.*/
     commands:
-      - docker tag gaiaadm/fleet gaiaadm/gaia-fleet:$CIRCLE_BRANCH
+      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BRANCH
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
