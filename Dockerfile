@@ -13,7 +13,7 @@ RUN chmod +x /deploy.sh
 # run everything in one RUN command to keep proxy setting between shell commands
 # this will not work if split into multiple RUN commands
 RUN sh /setup.sh < /proxy.list && source /etc/profile.d/proxy.sh && echo "PROXY=${http_proxy}" \
-  && apk add --update shadow \
+  && apk update \
   && apk add curl openssl \
   && rm -rf /var/cache/apk/* \
   && curl -L "https://github.com/coreos/fleet/releases/download/v${FLEET_VERSION}/fleet-v${FLEET_VERSION}-linux-amd64.tar.gz" | tar xz \
