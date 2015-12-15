@@ -14,10 +14,10 @@ RUN chmod +x /home/deploy.sh
 # this will not work if split into multiple RUN commands
 RUN sh /home/setup.sh < /home/proxy.list && source /etc/profile.d/proxy.sh && echo "PROXY=${http_proxy}" \
   && apk update \
-  && apk add curl openssl \
+  && apk add curl openssl bash \
   && rm -rf /var/cache/apk/* \
   && curl -L "https://github.com/coreos/fleet/releases/download/v${FLEET_VERSION}/fleet-v${FLEET_VERSION}-linux-amd64.tar.gz" | tar xz \
   && mv fleet-v${FLEET_VERSION}-linux-amd64/fleetctl /usr/local/bin/ \
   && rm -rf fleet-v${FLEET_VERSION}-linux-amd64
 
-CMD ["/bin/sh", "/home/deploy.sh"]
+CMD ["/bin/bash", "/home/deploy.sh"]

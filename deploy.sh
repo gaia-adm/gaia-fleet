@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # export FLEETCTL_ENDPOINT: docker host IP and 4001 port
 export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
