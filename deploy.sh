@@ -10,6 +10,7 @@ function deploy_fleet_unit() {
     if [ `cat .tmp | grep -q "differs"` ]; then
       fleetctl destroy $1
       fleetctl submit $1
+      fleetctl load $1
       fleetctl start $1
       echo "${1} - had beed updated\n"
     else
@@ -18,6 +19,7 @@ function deploy_fleet_unit() {
     rm .tmp
   else
     fleetctl submit $1
+    fleetctl load $1
     fleetctl start $1
     echo "${1} - started a new service"
   fi
