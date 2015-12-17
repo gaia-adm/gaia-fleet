@@ -89,13 +89,18 @@ deploy_fleet_unit registrator.service
 # 3: deploy/update cAdvisor
 deploy_fleet_unit cadvisor.service
 
-#4: deploy/update logentries
+# 4: deploy/update logentries
 deploy_fleet_unit logentries.service
 
-#5: TEMP run result-upload-service before all 'processors'
+# 5: deploy vault
+deploy_fleet_unit vault.service
+deploy_fleet_unit vault-unseal.service
+
+# 6: TEMP run result-upload-service before all 'processors'
 deploy_fleet_unit result-upload-service.service
 
-# deploy units from all *.service files (2 instances per template)
+# deploy remaining units from all *.service files
+# run 2 instances per template
 for f in *.service; do
   if [[ $f =~ "@.service" ]]; then
     # deploy 2 instances per templates

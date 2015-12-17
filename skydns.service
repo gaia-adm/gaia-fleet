@@ -17,8 +17,6 @@ Documentation=https://github.com/skynetservices/skydns
 
 After=docker.service
 Requires=docker.service
-# After=etcd2.service
-# Requires=etcd2.service
 
 [Service]
 # Large start timeout is to allow for pulling down Docker images from quay.io

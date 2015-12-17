@@ -19,11 +19,6 @@ Documentation=https://github.com/gaia-adm/result-upload-service
 After=registrator.service
 Wants=registrator.service
 
-# After=rabbitmq@master.service
-# After=security-token-service.service
-# Wants=rabbitmq@master.service
-# Wants=security-token-service.service
-
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry

@@ -16,10 +16,8 @@
 Description=Gaia ElasticSearch Events Indexer Service
 Documentation=https://github.com/gaia-adm/es-events-indexer
 
-After=rabbitmq@master.service
-After=es.service
-Wants=rabbitmq@master.service
-Wants=es.service
+After=registrator.service
+Wants=registrator.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

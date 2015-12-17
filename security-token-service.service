@@ -58,4 +58,3 @@ ExecStop=/usr/bin/docker stop sts
 
 [Install]
 WantedBy=multi-user.target
-

@@ -1,4 +1,5 @@
 # Copyright 2015 HP Software
+Wants=rabbitmq@master.service
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +17,8 @@
 Description=Gaia Events Indexer Service
 Documentation=https://github.com/gaia-adm/events-indexer
 
-# After=rabbitmq@master.service
-# After=influxdb.service
-# Wants=rabbitmq@master.service
-# Wants=influxdb.service
+After=registrator.service
+Wants=registrator.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

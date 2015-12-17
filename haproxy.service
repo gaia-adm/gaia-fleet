@@ -62,4 +62,3 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
-

@@ -17,11 +17,7 @@ Description=Gaia Task Configuration Service
 Documentation=https://github.com/gaia-adm/task-config-service
 
 After=registrator.service
-After=rabbitmq@master.service
-After=security-token-service.service
 Wants=registrator.service
-Wants=rabbitmq@master.service
-Wants=security-token-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

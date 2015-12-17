@@ -18,8 +18,6 @@ Documentation=https://github.com/gaia-adm/metrics-gateway-service
 
 After=registrator.service
 Wants=registrator.service
-# After=rabbitmq@master.service
-# Wants=rabbitmq@master.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
