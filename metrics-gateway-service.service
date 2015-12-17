@@ -17,9 +17,9 @@ Description=Gaia Metrics Gateway Service
 Documentation=https://github.com/gaia-adm/metrics-gateway-service
 
 After=registrator.service
-After=rabbitmq@master.service
 Wants=registrator.service
-Wants=rabbitmq@master.service
+# After=rabbitmq@master.service
+# Wants=rabbitmq@master.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -62,4 +62,3 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
-

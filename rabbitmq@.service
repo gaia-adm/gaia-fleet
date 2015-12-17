@@ -54,6 +54,8 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -v `/opt/bin/gaia-get-mount-path.sh rabbitmq-%i-${ENVIRON}`:/var/lib/rabbitmq \
 -e "SERVICE_NAME=rabbitmq-%i" \
 -e "SERVICE_TAGS=master" \
+-e "HOSTNAME=rabbitmq-%i.skydns.local" \
+-e "RABBITMQ_USE_LONGNAME=true" \
 gaiaadm/rabbitmq:3.5.3-1'
 
 # Stop

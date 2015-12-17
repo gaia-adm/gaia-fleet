@@ -18,11 +18,12 @@ Documentation=https://github.com/gaia-adm/alm-issue-change-processor
 # HACK: Dependency ordering due to lack of Amazon elastic file system. We require
 # result-upload-service.service to be started already and run on the same machine.
 After=registrator.service
-After=result-upload-service.service
-After=metrics-gateway-service.service
 Wants=registrator.service
-Wants=result-upload-service.service
-Wants=metrics-gateway-service.service
+
+# After=result-upload-service.service
+# After=metrics-gateway-service.service
+# Wants=result-upload-service.service
+# Wants=metrics-gateway-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

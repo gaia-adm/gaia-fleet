@@ -16,8 +16,8 @@
 Description=Kibana 4.3.0 (for ElasticSearch 2.1.0)
 Documentation=https://www.elastic.co/guide/en/kibana/current/releasenotes.html
 
-After=es.service
-Wants=es.service
+# After=es.service
+# Wants=es.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)

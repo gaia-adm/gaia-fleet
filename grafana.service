@@ -16,8 +16,8 @@
 Description=Grafana latest
 Documentation=http://docs.grafana.org/
 
-After=influxdb.service
-Wants=influxdb.service
+# After=influxdb.service
+# Wants=influxdb.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -53,13 +53,13 @@ ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-to
 ExecStartPre=/opt/bin/gaia-mount.sh grafana-${ENVIRON}
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
-    --name grafana \
-    -p 3000:3000 \
-    -e "SERVICE_NAME=grafana" \
-    -e "SERVICE_TAGS=master" \
-	-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/lib/grafana:/var/lib/grafana \
-	-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/log/grafana:/var/log/grafana \
-    grafana/grafana'
+--name grafana \
+-p 3000:3000 \
+-e "SERVICE_NAME=grafana" \
+-e "SERVICE_TAGS=master" \
+-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/lib/grafana:/var/lib/grafana \
+-v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/log/grafana:/var/log/grafana \
+grafana/grafana'
 
 # Stop
 ExecStop=/usr/bin/docker stop grafana

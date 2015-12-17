@@ -16,10 +16,10 @@
 Description=Gaia Events Indexer Service
 Documentation=https://github.com/gaia-adm/events-indexer
 
-After=rabbitmq@master.service
-After=influxdb.service
-Wants=rabbitmq@master.service
-Wants=influxdb.service
+# After=rabbitmq@master.service
+# After=influxdb.service
+# Wants=rabbitmq@master.service
+# Wants=influxdb.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -62,4 +62,3 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
-

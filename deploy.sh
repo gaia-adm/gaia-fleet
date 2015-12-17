@@ -1,29 +1,63 @@
 #!/bin/bash
 
-# export FLEETCTL_ENDPOINT: docker host IP and 4001 port
-export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
+# debug
+set -x
 
-# deploy fleet units
-function deploy_fleet_unit() {
+# export FLEETCTL_ENDPOINT: docker host IP and 4001 port
+if [ -z "$FLEETCTL_ENDPOINT" ]; then
+  export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
+fi
+
+# start all 'loaded' unit files
+function start_loaded_fleet_units() {
+  local x=`fleetctl list-unit-files | grep -w inactive | awk '{print $1}'`
+  local loadedArr=(${x//$'\n'/ })
+  for s in "${loadedArr[@]}"; do
+    fleetctl start $s
+  done
+}
+
+# start fleet unit and wait till 'active' and 'running'
+function start_fleet_unit() {
+  fleetctl start $1
+  status=1
+  while [ $status -eq 1 ] ;do
+    status=0
+    local x=`fleetctl list-units | grep -w ${1} | awk '{print $3}'`
+    local statusArr=(${x//$'\n'/ })
+    for i in "${statusArr[@]}"; do
+      status=`${status} || [ $i == "active" ]`
+    done
+    sleep 5
+  done
+}
+
+
+# submit new/updates fleet units and destroy previous versions, if exist
+function load_fleet_unit() {
   if [ `fleetctl list-unit-files | grep -q $1` ]; then
     fleetctl submit $1 1&> .tmp
     if [ `cat .tmp | grep -q "differs"` ]; then
       fleetctl destroy $1
       fleetctl submit $1
-      fleetctl load $1
-      fleetctl start $1
-      echo "${1} - had beed updated\n"
+      echo "${1} - unit had beed updated\n"
     else
       echo "${1} - update is not required\n"
     fi
     rm .tmp
   else
     fleetctl submit $1
-    fleetctl load $1
-    fleetctl start $1
-    echo "${1} - started a new service"
+    echo "${1} - a new unit uploaded"
   fi
 }
+
+
+# deploy = load and start fleet unit
+function deploy_fleet_unit() {
+  load_fleet_unit $1
+  start_fleet_unit $1
+}
+
 
 # destroy fleet units without files
 function cleanup_fleet_units() {
@@ -33,7 +67,7 @@ function cleanup_fleet_units() {
     else
       # handle template
       if [[ $file =~ "@" ]]; then
-        local template=${file%%[0-9]*}.service
+        local template=${file%%@*}@.service
         if [ -f $template ]; then
           continue
         else
@@ -46,24 +80,36 @@ function cleanup_fleet_units() {
   done
 }
 
-# First: deploy/update SkyDNS
+# 1: deploy/update SkyDNS
 deploy_fleet_unit skydns.service
 
-# Second: deploy/update Registrator
+# 2: deploy/update Registrator
 deploy_fleet_unit registrator.service
+
+# 3: deploy/update cAdvisor
+deploy_fleet_unit cadvisor.service
+
+#4: deploy/update logentries
+deploy_fleet_unit logentries.service
+
+#5: TEMP run result-upload-service before all 'processors'
+deploy_fleet_unit result-upload-service.service
 
 # deploy units from all *.service files (2 instances per template)
 for f in *.service; do
   if [[ $f =~ "@.service" ]]; then
     # deploy 2 instances per templates
-    f1=${f/@.service/@1.service}
-    f2=${f/@.service/@2.service}
-    deploy_fleet_unit $f1
-    deploy_fleet_unit $f2
+    f1=${f/@.service/@master.service}
+    f2=${f/@.service/@slave.service}
+    load_fleet_unit $f1
+    load_fleet_unit $f2
   else
-    deploy_fleet_unit $f
+    load_fleet_unit $f
   fi
 done
+
+# start all loaded units that are not running
+start_loaded_fleet_units
 
 # cleanup units that do not have corresponding file
 cleanup_fleet_units
