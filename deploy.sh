@@ -1,61 +1,72 @@
 #!/bin/bash
 
 # debug
-set -x
+# set -x
 
 # export FLEETCTL_ENDPOINT: docker host IP and 4001 port
 if [ -z "$FLEETCTL_ENDPOINT" ]; then
   export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
 fi
 
-# start all 'loaded' unit files
-function start_loaded_fleet_units() {
-  local x=`fleetctl list-unit-files | grep -w inactive | awk '{print $1}'`
-  local loadedArr=(${x//$'\n'/ })
-  for s in "${loadedArr[@]}"; do
-    fleetctl start $s
-  done
-}
 
 # start fleet unit and wait till 'active' and 'running'
 function start_fleet_unit() {
   fleetctl start $1
-  status=1
-  while [ $status -eq 1 ] ;do
+  # skip vault-unseal unit wait (it's a volume container)
+  if [ $1 == "vault-unseal.service" ]; then
+    return 0
+  fi
+  # ACTIVE status is 'active
+  local status=1
+  while [ $status == 1 ] ;do
+    sleep 2
+    x=(`fleetctl list-units | grep -w $1 | awk '{print $3}'`)
+    if [ ${#x[@]} == 0 ]; then
+      continue
+    fi
     status=0
-    local x=`fleetctl list-units | grep -w ${1} | awk '{print $3}'`
-    local statusArr=(${x//$'\n'/ })
-    for i in "${statusArr[@]}"; do
-      status=`${status} || [ $i == "active" ]`
+    for i in "${x[@]}"; do
+      if [ $i != "active" ]; then
+        status=1
+        break
+      fi
     done
-    sleep 5
+  done
+  # SUB status is running
+  status=1
+  while [ $status == 1 ] ;do
+    sleep 2
+    x=(`fleetctl list-units | grep -w $1 | awk '{print $4}'`)
+    if [ ${#x[@]} == 0 ]; then
+      continue
+    fi
+    status=0
+    for i in "${x[@]}"; do
+      if [ $i != "running" ]; then
+        status=1
+        break
+      fi
+    done
   done
 }
 
 
 # submit new/updates fleet units and destroy previous versions, if exist
 function load_fleet_unit() {
-  if [ `fleetctl list-unit-files | grep -q $1` ]; then
-    fleetctl submit $1 1&> .tmp
+  if [[ `fleetctl list-unit-files | grep -w ${1}` ]]; then
+    fleetctl submit ${1} 1&> .tmp
     if [ `cat .tmp | grep -q "differs"` ]; then
-      fleetctl destroy $1
-      fleetctl submit $1
-      echo "${1} - unit had beed updated\n"
+      fleetctl destroy ${1}
+      fleetctl submit ${1}
+      echo "${1} - unit had beed updated"
     else
-      echo "${1} - update is not required\n"
+      echo "${1} - update is not required"
     fi
     rm .tmp
   else
-    fleetctl submit $1
+    fleetctl submit ${1}
     echo "${1} - a new unit uploaded"
   fi
-}
-
-
-# deploy = load and start fleet unit
-function deploy_fleet_unit() {
-  load_fleet_unit $1
-  start_fleet_unit $1
 }
 
 
@@ -80,41 +91,44 @@ function cleanup_fleet_units() {
   done
 }
 
-# 1: deploy/update SkyDNS
-deploy_fleet_unit skydns.service
 
-# 2: deploy/update Registrator
-deploy_fleet_unit registrator.service
+# deploy = load and start fleet unit
+function deploy_fleet_unit() {
+  load_fleet_unit $1
+  start_fleet_unit $1
+}
 
-# 3: deploy/update cAdvisor
-deploy_fleet_unit cadvisor.service
 
-# 4: deploy/update logentries
-deploy_fleet_unit logentries.service
+declare -a core_units=( skydns.service registrator.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
+declare -a all_units=(*.service)
+declare -a other_units=()
 
-# 5: deploy vault
-deploy_fleet_unit vault.service
-deploy_fleet_unit vault-unseal.service
-
-# 6: TEMP run result-upload-service before all 'processors'
-deploy_fleet_unit result-upload-service.service
-
-# deploy remaining units from all *.service files
-# run 2 instances per template
-for f in *.service; do
-  if [[ $f =~ "@.service" ]]; then
-    # deploy 2 instances per templates
-    f1=${f/@.service/@master.service}
-    f2=${f/@.service/@slave.service}
-    load_fleet_unit $f1
-    load_fleet_unit $f2
-  else
-    load_fleet_unit $f
+for u in ${all_units[@]}; do
+  found=1
+  for c in ${core_units[@]}; do
+    if [ $c == $u ]; then
+      found=0
+    fi
+  done
+  if [[ $found == 1 ]]; then
+    # for template add two units: master and slave
+    if [[ $u =~ "@.service" ]]; then
+      other_units+=(${u/@.service/@master.service})
+      other_units+=(${u/@.service/@slave.service})
+    else
+      other_units+=($u)
+    fi
   fi
 done
 
-# start all loaded units that are not running
-start_loaded_fleet_units
+units=( ${core_units[@]} ${other_units[@]} )
+
+
+for unit in ${units[@]}; do
+  echo "depoyment of: $unit"
+  deploy_fleet_unit $unit
+done
+
 
 # cleanup units that do not have corresponding file
 cleanup_fleet_units
