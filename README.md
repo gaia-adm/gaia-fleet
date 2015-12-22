@@ -1,6 +1,10 @@
 # Gaia Fleet
 
-This repository contains a set of services for Gaia ADM project. 
+This repository contains a set of services for Gaia ADM project.
+
+## Build
+
+To build current image behind corporate proxy use `--build-arg` option (introduced with Docker 1.9)
 
 ## Initilization
 
