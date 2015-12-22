@@ -28,7 +28,7 @@ RestartSec=5
 
 EnvironmentFile=/etc/environment
 
-Environment="SKYDNS_RELEASE=2.5.0b"
+Environment="SKYDNS_RELEASE=2.5.3a"
 Environment="SKYDNS_DOMAIN=skydns.local"
 Environment="SKYDNS_ENVIRONMENT=dev"
 Environment="SKYDNS_ADDR=0.0.0.0:53"

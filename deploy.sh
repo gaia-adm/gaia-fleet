@@ -16,34 +16,18 @@ function start_fleet_unit() {
   if [ $1 == "vault-unseal.service" ]; then
     return 0
   fi
-  # ACTIVE status is 'active
-  local status=1
-  while [ $status == 1 ] ;do
-    sleep 2
+  # ACTIVE status is 'active' or 3 min timeout
+  local status=0
+  while [ $status < 60 ] ;do
+    sleep 3
     x=(`fleetctl list-units | grep -w $1 | awk '{print $3}'`)
     if [ ${#x[@]} == 0 ]; then
       continue
     fi
-    status=0
+    status=$((status+1))
     for i in "${x[@]}"; do
-      if [ $i != "active" ]; then
-        status=1
-        break
-      fi
-    done
-  done
-  # SUB status is running
-  status=1
-  while [ $status == 1 ] ;do
-    sleep 2
-    x=(`fleetctl list-units | grep -w $1 | awk '{print $4}'`)
-    if [ ${#x[@]} == 0 ]; then
-      continue
-    fi
-    status=0
-    for i in "${x[@]}"; do
-      if [ $i != "running" ]; then
-        status=1
+      if [ $i == "active" ]; then
+        status=60
         break
       fi
     done
@@ -111,10 +95,10 @@ for u in ${all_units[@]}; do
     fi
   done
   if [[ $found == 1 ]]; then
-    # for template add two units: master and slave
+    # for template add two units
     if [[ $u =~ "@.service" ]]; then
-      other_units+=(${u/@.service/@master.service})
-      other_units+=(${u/@.service/@slave.service})
+      other_units+=(${u/@.service/@1.service})
+      other_units+=(${u/@.service/@2.service})
     else
       other_units+=($u)
     fi
@@ -122,7 +106,6 @@ for u in ${all_units[@]}; do
 done
 
 units=( ${core_units[@]} ${other_units[@]} )
-
 
 for unit in ${units[@]}; do
   echo "depoyment of: $unit"

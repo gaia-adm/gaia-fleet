@@ -50,7 +50,7 @@ ExecStart=/usr/bin/docker run \
 -e "SERVICE_NAME=esevi" -e "SERVICE_TAGS=master" \
 -p 8040:8080 -p 8041:8081 \
 gaiaadm/es-event-indexer \
-java -Ddw.es.host=es.skydns.local -Ddw.rabbitmq.host=rabbitmq-master.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password= -jar /data/target/es-events-indexer-1.0-SNAPSHOT.jar server
+java -Ddw.es.host=es.skydns.local -Ddw.rabbitmq.host=rabbitmq.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password= -jar /data/target/es-events-indexer-1.0-SNAPSHOT.jar server
 
 # Stop
 ExecStop=/usr/bin/docker stop esevi

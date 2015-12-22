@@ -52,7 +52,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -p 9006:8080 \
 -e AMQ_USER="admin" \
 -e AMQ_PASSWORD="" \
--e AMQ_SERVER="rabbitmq-master.skydns.local:5672" \
+-e AMQ_SERVER="rabbitmq.skydns.local:5672" \
 -e AUTH_SERVER="sts.skydns.local:8080" \
 -e "SERVICE_NAME=result-upload-service" \
 -e "SERVICE_TAGS=master" \
