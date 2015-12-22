@@ -14,7 +14,7 @@
 
 [Unit]
 Description=Gaia Task Configuration Service
-Documentation=https://github.com/gaia-adm/task-config-service
+Documentation=https://github.com/gaia-adm/webhook-service
 
 After=registrator.service
 Wants=registrator.service
@@ -38,28 +38,28 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker stop tcs
-ExecStartPre=-/usr/bin/docker rm tcs
+ExecStartPre=-/usr/bin/docker stop whs
+ExecStartPre=-/usr/bin/docker rm whs
 # This is due to bug in which multiple docker pulls might collide in case of the same base image
 # Bug had been reported here: https://github.com/docker/docker/issues/9718
 # This issue still exists in Docker 1.8.1
 # for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/tcs"
+ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/whs"
 ExecStart=/usr/bin/docker run \
---name tcs \
+--name whs \
 -p 3210:3000 \
 -e AMQ_USER=admin \
 -e AMQ_SERVER=rabbitmq.skydns.local:5672 \
 -e AMQ_PASSWORD=admin \
 -e ETCD_SERVER=${COREOS_PRIVATE_IPV4}:4001 \
 -e AUTH_SERVER=sts.skydns.local:8080 \
--e SERVICE_NAME=tcs \
+-e SERVICE_NAME=whs \
 -e SERVICE_TAGS=master \
 -e LOG_LEVEL=DEBUG \
-gaiaadm/tcs
+gaiaadm/whs
 
 # Stop
-ExecStop=/usr/bin/docker stop tcs
+ExecStop=/usr/bin/docker stop whs
 
 [Install]
 WantedBy=multi-user.target
