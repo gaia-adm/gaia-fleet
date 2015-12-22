@@ -18,7 +18,7 @@ function start_fleet_unit() {
   fi
   # ACTIVE status is 'active' or 3 min timeout
   local status=0
-  while [ $status < 60 ] ;do
+  while [ $status -le 60 ] ;do
     sleep 3
     x=(`fleetctl list-units | grep -w $1 | awk '{print $3}'`)
     if [ ${#x[@]} == 0 ]; then
