@@ -47,10 +47,15 @@ ExecStartPre=-/usr/bin/docker rm tcs
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/tcs"
 ExecStart=/usr/bin/docker run \
 --name tcs \
--e "AMQ_USER=admin" -e "AMQ_SERVER=rabbitmq.skydns.local:5672" -e "ETCD_SERVER=${COREOS_PRIVATE_IPV4}:4001" -e "AUTH_SERVER=sts.skydns.local:8080" \
--e "SERVICE_NAME=tcs" -e "SERVICE_TAGS=master" \
 -p 3210:3000 \
--e LOG_LEVEL="DEBUG" \
+-e AMQ_USER=admin \
+-e AMQ_SERVER=rabbitmq.skydns.local:5672 \
+-e AMQ_PASSWORD=admin \
+-e ETCD_SERVER=${COREOS_PRIVATE_IPV4}:4001 \
+-e AUTH_SERVER=sts.skydns.local:8080 \
+-e SERVICE_NAME=tcs \
+-e SERVICE_TAGS=master \
+-e LOG_LEVEL=DEBUG \
 gaiaadm/tcs
 
 # Stop

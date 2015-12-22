@@ -18,7 +18,7 @@ function start_fleet_unit() {
   fi
   # ACTIVE status is 'active' or 3 min timeout
   local status=0
-  while [ $status -le 60 ] ;do
+  while [ $status -lt 60 ] ;do
     sleep 3
     x=(`fleetctl list-units | grep -w $1 | awk '{print $3}'`)
     if [ ${#x[@]} == 0 ]; then
@@ -39,7 +39,7 @@ function start_fleet_unit() {
 function load_fleet_unit() {
   if [[ `fleetctl list-unit-files | grep -w ${1}` ]]; then
     fleetctl submit ${1} 1&> .tmp
-    if [ `cat .tmp | grep -q "differs"` ]; then
+    if cat .tmp | grep -q "differs"; then
       fleetctl destroy ${1}
       fleetctl submit ${1}
       echo "${1} - unit had beed updated"

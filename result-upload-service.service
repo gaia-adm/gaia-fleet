@@ -49,17 +49,17 @@ ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pu
 ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/opt/bin/gaia-mount.sh result-upload-${ENVIRON}
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
--p 9006:8080 \
--e AMQ_USER="admin" \
--e AMQ_PASSWORD="" \
--e AMQ_SERVER="rabbitmq.skydns.local:5672" \
--e AUTH_SERVER="sts.skydns.local:8080" \
--e "SERVICE_NAME=result-upload-service" \
--e "SERVICE_TAGS=master" \
--e STORAGE_PATH="/upload" \
--e LOG_LEVEL="INFO" \
--v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name result-upload-service \
+-p 9006:8080 \
+-e AMQ_USER=admin \
+-e AMQ_PASSWORD=admin \
+-e AMQ_SERVER=rabbitmq.skydns.local:5672 \
+-e AUTH_SERVER=sts.skydns.local:8080 \
+-e SERVICE_NAME=result-upload-service \
+-e SERVICE_TAGS=master \
+-e STORAGE_PATH=/upload \
+-e LOG_LEVEL=INFO \
+-v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 gaiaadm/result-upload-service'
 
 # Stop

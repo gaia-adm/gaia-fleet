@@ -23,7 +23,7 @@ Wants=registrator.service
 # result-upload-service.service to be started already and run on the same machine.
 After=result-upload-service.service
 Wants=result-upload-service.service
- 
+
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
@@ -52,13 +52,13 @@ ExecStartPre=-/usr/bin/docker rm jenkins-tests-processor
 # for now - we sync the collided services (evi, mgs and sts) using flock
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/jenkins-tests-processor"
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
--e AMQ_USER="admin" \
--e AMQ_PASSWORD="" \
--e AMQ_SERVER="rabbitmq.skydns.local:5672" \
--e MGS_SERVER="mgs.skydns.local:8080" \
--e LOG_LEVEL="INFO" \
--v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 --name jenkins-tests-processor \
+-e AMQ_USER=admin \
+-e AMQ_PASSWORD=admin \
+-e AMQ_SERVER=rabbitmq.skydns.local:5672 \
+-e MGS_SERVER=mgs.skydns.local:8080 \
+-e LOG_LEVEL=INFO \
+-v `/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}`:/upload \
 gaiaadm/jenkins-tests-processor'
 
 # Stop

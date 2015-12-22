@@ -48,10 +48,11 @@ ExecStartPre=-/usr/bin/docker rm evi
 ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/event-indexer"
 ExecStart=/usr/bin/docker run \
 --name evi \
--e "SERVICE_NAME=evi" -e "SERVICE_TAGS=master" \
 -p 8080:8080 -p 8081:8081 \
+-e SERVICE_NAME=evi \
+-e SERVICE_TAGS=master \
 gaiaadm/event-indexer \
-java -Ddw.influxdb.host=influxdb.skydns.local -Ddw.rabbitmq.host=rabbitmq.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password= -jar /data/target/events-indexer-1.0-SNAPSHOT.jar server
+java -Ddw.influxdb.host=influxdb.skydns.local -Ddw.rabbitmq.host=rabbitmq.skydns.local -Ddw.rabbitmq.username=admin -Ddw.rabbitmq.password=admin -jar /data/target/events-indexer-1.0-SNAPSHOT.jar server
 
 # Stop
 ExecStop=/usr/bin/docker stop evi
