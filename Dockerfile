@@ -7,8 +7,8 @@ ENV gaia /home/gaia
 RUN mkdir -p ${gaia}
 
 WORKDIR ${gaia}
-COPY *.service .
-COPY deploy.sh .
+COPY *.service ./
+COPY deploy.sh ./
 RUN chmod +x deploy.sh
 
 # install packages and fleetctl client
