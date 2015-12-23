@@ -7,7 +7,7 @@ dependencies:
     - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
 test:
   override:
-    - docker run -it --name=test gaiaadm/gaia-fleet /bin/bash -c '[ -f /home/deploy.sh ]'
+    - docker run -it --name=test gaiaadm/gaia-fleet /bin/bash -c '[ -f /home/gaia/deploy.sh ]'
 deployment:
   master:
     branch: master
