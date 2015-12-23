@@ -3,9 +3,13 @@ MAINTAINER Alexei Ledenev <alexei.led@gmail.com>
 
 ENV FLEET_VERSION 0.11.5
 
-COPY *.service /home/
-COPY deploy.sh /home/
-RUN chmod +x /home/deploy.sh
+ENV gaia /home/gaia
+RUN mkdir -p ${gaia}
+
+WORKDIR ${gaia}
+COPY *.service .
+COPY deploy.sh .
+RUN chmod +x deploy.sh
 
 # install packages and fleetctl client
 RUN apk update && \
@@ -15,4 +19,4 @@ RUN apk update && \
     mv fleet-v${FLEET_VERSION}-linux-amd64/fleetctl /usr/local/bin/ && \
     rm -rf fleet-v${FLEET_VERSION}-linux-amd64
 
-CMD ["/bin/bash", "/home/deploy.sh"]
+CMD ["/bin/bash", "deploy.sh"]
