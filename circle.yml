@@ -4,26 +4,23 @@ machine:
 dependencies:
   override:
     - docker build -t gaiaadm/gaia-fleet .
-    - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM
+    - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
 test:
   override:
     - docker run -it --name=test gaiaadm/gaia-fleet /bin/bash -c '[ -f /home/deploy.sh ]'
 deployment:
-  production:
+  master:
     branch: master
     commands:
-      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:production
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
   develop:
     branch: develop
     commands:
-      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:develop
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
   feature:
     branch: /feature_.*/
     commands:
-      - docker tag gaiaadm/gaia-fleet gaiaadm/gaia-fleet:$CIRCLE_BRANCH
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push gaiaadm/gaia-fleet
