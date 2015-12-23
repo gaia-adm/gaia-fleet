@@ -41,8 +41,8 @@ ExecStartPre=-/usr/bin/docker rm coregi
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name coregi \
--p 3001:3000 \
--v ~/.ssh/id_rsa:/root/id_rsa \
+-p 3100:3000 \
+-v ~/.ssh:/root/.ssh \
 -e ETCD_HOST=${COREOS_PRIVATE_IPV4} \
 -e FLEET_TUNNEL=${COREOS_PRIVATE_IPV4} \
 -e SERVICE_NAME=coregi \

@@ -41,8 +41,8 @@ ExecStartPre=-/usr/bin/docker rm fleet-ui
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name fleet-ui \
--p 3000:3000 \
--v ~/.ssh/id_rsa:/root/id_rsa \
+-p 3200:3000 \
+-v ~/.ssh:/root/.ssh \
 -e ETCD_PEER=http://${COREOS_PRIVATE_IPV4}:4001 \
 -e SERVICE_NAME=fleet-ui \
 -e SERVICE_TAGS=fleet-ui,dashboard \
