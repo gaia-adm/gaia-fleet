@@ -26,11 +26,6 @@ Restart=no
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
 
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/crypt"
 ExecStart=/bin/bash -a -c \
   'unseal_key=$(/bin/docker run -v /etc/gaia:/etc/gaia --rm=true gaiaadm/crypt crypt get -backend=etcd -endpoint=http://${COREOS_PRIVATE_IPV4}:4001 -secret-keyring /etc/gaia/gaia-secring.gpg /gaia/vault/unseal_key) ; \
    res=$? ; \

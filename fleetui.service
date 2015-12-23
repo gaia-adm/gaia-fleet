@@ -13,20 +13,14 @@
 # limitations under the License.
 
 [Unit]
-Description=Gaia Jenkins tests processor
-Documentation=https://github.com/gaia-adm/agm-issue-change-processor
+Description=Fleet-UI
+Documentation=https://github.com/purpleworks/fleet-ui
 
-After=registrator.service
-Wants=registrator.service
-# HACK: Dependency ordering due to lack of Amazon elastic file system. We require
-# result-upload-service.service to be started already and run on the same machine.
-After=result-upload-service.service
-Wants=result-upload-service.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
-TimeoutStartSec=20min
+TimeoutStartSec=10min
 TimeoutStopSec=15
 
 # Change killmode from "control-group" to "none" to let Docker remove
@@ -42,26 +36,20 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/bin/mkdir /upload
-ExecStartPre=-/usr/bin/docker stop agm-issue-change-processor
-ExecStartPre=-/usr/bin/docker rm agm-issue-change-processor
+ExecStartPre=-/usr/bin/docker kill fleet-ui
+ExecStartPre=-/usr/bin/docker rm fleet-ui
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
---name agm-issue-change-processor \
--e AMQ_USER=admin \
--e AMQ_PASSWORD=admin \
--e AMQ_SERVER=rabbitmq.skydns.local:5672 \
--e MGS_SERVER=mgs.skydns.local:8080 \
--e LOG_LEVEL=INFO \
--v $(/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}):/upload \
-gaiaadm/agm-issue-change-processor'
+--name fleet-ui \
+-p 3000:3000 \
+-v ~/.ssh/id_rsa:/root/id_rsa \
+-e ETCD_PEER=http://${COREOS_PRIVATE_IPV4}:4001 \
+-e SERVICE_NAME=fleet-ui \
+-e SERVICE_TAGS=fleet-ui,dashboard \
+purpleworks/fleet-ui'
 
 # Stop
-ExecStop=/usr/bin/docker stop agm-issue-change-processor
+ExecStop=/usr/bin/docker stop fleet-ui
 
 [Install]
 WantedBy=multi-user.target
-
-[X-Fleet]
-# HACK: currently needed due to lack of Amazon elastic file system
-MachineOf=result-upload-service.service

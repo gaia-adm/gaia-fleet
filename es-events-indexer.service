@@ -40,11 +40,7 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop esevi
 ExecStartPre=-/usr/bin/docker rm esevi
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (esevi, evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/es-event-indexer"
+
 ExecStart=/usr/bin/docker run \
 --name esevi \
 -p 8040:8080 -p 8041:8081 \

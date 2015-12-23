@@ -38,12 +38,6 @@ RestartSec=20s
 ExecStartPre=-/usr/bin/docker kill grafana
 ExecStartPre=-/usr/bin/docker rm grafana
 
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull grafana/grafana"
-
 # mount grafana external volume
 ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
@@ -52,10 +46,10 @@ ExecStartPre=/opt/bin/gaia-mount.sh grafana-${ENVIRON}
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name grafana \
 -p 3000:3000 \
--e "SERVICE_NAME=grafana" \
--e "SERVICE_TAGS=master" \
--v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/lib/grafana:/var/lib/grafana \
--v `/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON}`/var/log/grafana:/var/log/grafana \
+-e SERVICE_NAME=grafana \
+-e SERVICE_TAGS=master \
+-v $(/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON})/var/lib/grafana:/var/lib/grafana \
+-v $(/opt/bin/gaia-get-mount-path.sh grafana-${ENVIRON})/var/log/grafana:/var/log/grafana \
 grafana/grafana'
 
 # Stop

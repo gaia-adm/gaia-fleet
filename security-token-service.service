@@ -25,8 +25,7 @@ Wants=registrator.service
 TimeoutStartSec=20min
 TimeoutStopSec=15
 
-# Change killmode from "control-group" to "none" to let Docker remove
-# work correctly.
+# Change killmode from "control-group" to "none" to let Docker remove work correctly.
 KillMode=none
 
 # Get CoreOS environmental variables
@@ -40,17 +39,16 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker stop sts
 ExecStartPre=-/usr/bin/docker rm sts
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/sts"
+
 ExecStart=/usr/bin/docker run \
 -u jetty --name sts \
--p 9001:8080 -p 9093:9093 \
--e "etcdUrl=http://${COREOS_PRIVATE_IPV4}:4001" \
--e "SERVICE_8080_NAME=sts" -e "SERVICE_8080_TAGS=master" \
--e "SERVICE_9093_NAME=stsdb" -e "SERVICE_9093_TAGS=master" \
+-p 9001:8080 \
+-p 9093:9093 \
+-e etcdUrl=http://${COREOS_PRIVATE_IPV4}:4001 \
+-e SERVICE_8080_NAME=sts \
+-e SERVICE_8080_TAGS=master \
+-e SERVICE_9093_NAME=stsdb \
+-e SERVICE_9093_TAGS=master \
 gaiaadm/sts
 
 # Stop

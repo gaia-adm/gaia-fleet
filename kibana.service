@@ -41,19 +41,13 @@ RestartSec=20s
 ExecStartPre=-/usr/bin/docker kill kibana
 ExecStartPre=-/usr/bin/docker rm kibana
 
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull kibana:4.3.0"
-
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
-    --name kibana \
-    -e ELASTICSEARCH_URL=http://es.skydns.local:9200 \
-    -p 5601:5601 \
-    -e "SERVICE_NAME=kibana" \
-    -e "SERVICE_TAGS=master" \
-    kibana:4.3.0'
+--name kibana \
+-e ELASTICSEARCH_URL=http://es.skydns.local:9200 \
+-p 5601:5601 \
+-e SERVICE_NAME=kibana \
+-e SERVICE_TAGS=master \
+kibana:4.3.0'
 
 # Stop
 ExecStop=/usr/bin/docker stop kibana

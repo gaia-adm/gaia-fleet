@@ -35,22 +35,18 @@ Environment="SKYDNS_ADDR=0.0.0.0:53"
 
 ExecStartPre=-/usr/bin/docker kill skydns
 ExecStartPre=-/usr/bin/docker rm skydns
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull skynetservices/skydns:${SKYDNS_RELEASE}"
 
-ExecStart=/bin/bash -a -c 'SKYDNS_NAMESERVERS=`/bin/awk \'/^nameserver/ && !/127.0.0.1/ {print $2":53"}\' /etc/resolv.conf | head -n1` && \
+ExecStart=/bin/bash -a -c \
+'SKYDNS_NAMESERVERS=$(/bin/awk \'/^nameserver/ && !/127.0.0.1/ {print $2":53"}\' /etc/resolv.conf | head -n1) && \
 exec /usr/bin/docker run \
 --name skydns \
--e "ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001" \
--e "SKYDNS_NAMESERVERS=$SKYDNS_NAMESERVERS" \
--e "SKYDNS_DOMAIN=${SKYDNS_DOMAIN}" \
--e "SKYDNS_ADDR=${SKYDNS_ADDR}" \
--h local.dns.${SKYDNS_ENVIRONMENT}.${SKYDNS_DOMAIN} \
 -p 53:53/udp \
 -p 53:53/tcp \
+-e ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001 \
+-e SKYDNS_NAMESERVERS=$SKYDNS_NAMESERVERS \
+-e SKYDNS_DOMAIN=${SKYDNS_DOMAIN} \
+-e SKYDNS_ADDR=${SKYDNS_ADDR} \
+-h local.dns.${SKYDNS_ENVIRONMENT}.${SKYDNS_DOMAIN} \
 skynetservices/skydns:${SKYDNS_RELEASE}'
 
 ExecStop=/usr/bin/docker kill skydns

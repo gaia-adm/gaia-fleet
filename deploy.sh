@@ -36,7 +36,7 @@ function start_fleet_unit() {
 
 # submit new/updates fleet units and destroy previous versions, if exist
 function load_fleet_unit() {
-  if [[ `fleetctl list-unit-files | grep -w ${1}` ]]; then
+  if [[ $(fleetctl list-unit-files | grep -w ${1}) ]]; then
     fleetctl submit ${1} 1&> .tmp
     if cat .tmp | grep -q "differs"; then
       fleetctl destroy ${1}
@@ -55,7 +55,7 @@ function load_fleet_unit() {
 
 # destroy fleet units without files
 function cleanup_fleet_units() {
-  for file in `fleetctl list-unit-files -fields unit --no-legend`; do
+  for file in $(fleetctl list-unit-files -fields unit --no-legend); do
     if [ -f $file ]; then
       continue
     else

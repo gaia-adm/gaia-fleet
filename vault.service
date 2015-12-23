@@ -40,11 +40,6 @@ RestartSec=20s
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill vault
 ExecStartPre=-/usr/bin/docker rm vault
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gaiaadm/vault"
 
 # generate SSL certificate for vault.skydns.local and vault-hash.skydns.local
 ExecStartPre=/bin/bash -a -c \
@@ -58,6 +53,7 @@ ExecStartPre=/bin/bash -a -c \
     else \
       echo "SSL certificate already exists" ; \
     fi'
+
 ExecStart=/bin/bash -a -c \
     '/usr/bin/docker run \
     --name vault \
@@ -65,7 +61,7 @@ ExecStart=/bin/bash -a -c \
     -v /etc/vault:/etc/vault \
     -e ETCD_ADDR=http://${COREOS_PRIVATE_IPV4}:4001 \
     -e VAULT_ADDR=http://127.0.0.1:8200 \
-    -e "VAULT_ADVERTIZE_ADDR=https://vault-$(cat /etc/machine-id).skydns.local:8201" \
+    -e VAULT_ADVERTIZE_ADDR=https://vault-$(cat /etc/machine-id).skydns.local:8201 \
     -e SERVICE_8200_NAME=vault \
     -e SERVICE_8201_NAME=vault-$(cat /etc/machine-id) \
     -p 8200:8200 \

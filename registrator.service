@@ -32,17 +32,11 @@ Environment="SKYDNS_DOMAIN=skydns.local"
 
 ExecStartPre=-/usr/bin/docker kill registrator
 ExecStartPre=-/usr/bin/docker rm registrator
-# This is due to bug in which multiple docker pulls might collide in case of the same base image
-# Bug had been reported here: https://github.com/docker/docker/issues/9718
-# This issue still exists in Docker 1.8.1
-# for now - we sync the collided services (evi, mgs and sts) using flock
-ExecStartPre=/usr/bin/flock -w 600 "/home/core/pull.lock" -c "/usr/bin/docker pull gliderlabs/registrator:${REGISTRATOR_RELEASE}"
 
 ExecStart=/usr/bin/docker run --name registrator \
 -v /var/run/docker.sock:/tmp/docker.sock \
 -h ${COREOS_PRIVATE_IPV4} \
 gliderlabs/registrator:${REGISTRATOR_RELEASE} -internal -ttl=180 -ttl-refresh=30 skydns2://${COREOS_PRIVATE_IPV4}:4001/${SKYDNS_DOMAIN}
-
 
 ExecStop=/usr/bin/docker kill registrator
 
