@@ -46,7 +46,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e ETCD_PEER=http://${COREOS_PRIVATE_IPV4}:4001 \
 -e SERVICE_NAME=fleet-ui \
 -e SERVICE_TAGS=fleet-ui,dashboard \
-purpleworks/fleet-ui'
+gaiaadm/fleet-ui'
 
 # Stop
 ExecStop=/usr/bin/docker stop fleet-ui
