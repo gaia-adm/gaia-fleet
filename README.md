@@ -1,3 +1,5 @@
+[![](https://badge.imagelayers.io/gaiaadm/gaia-fleet:latest.svg)](https://imagelayers.io/?images=gaiaadm/gaia-fleet:latest 'Get your own badge on imagelayers.io')
+
 # Gaia Fleet
 
 This repository contains a set of services for Gaia ADM project.
