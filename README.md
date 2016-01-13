@@ -28,6 +28,22 @@ For example:
 
 ```
 
+## Deploy and Update Gaia Services on CoreOS cluster
+
+In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts. 
+
+```
+docker run -it --rm=true --name=gaiacd gaiaadm/gaia-fleet
+```
+
+To watch the deployment progress you can run the following command inside other SSH session on any machine that can conect to CoreOS cluster.
+
+```
+whatch -n 3 `fleetctl list-unit-files && echo "====================" && fleetctl list-units`
+```
+
+**Note**: This feature is under development and the deployment procedure will be changed soon.
+
 ## DNS setup
 
 If you are using [our fork](https://github.com/gaia-adm/coreos-vagrant) of [coreos-vagrant](https://github.com/coreos/coreos-vagrant), you do not need to specify DNS for every docker container you are running. The appropriate DNS server will be setup automatically for you container.
