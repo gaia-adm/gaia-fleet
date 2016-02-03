@@ -1,0 +1,34 @@
+[Unit]
+Description=Dex-worker
+Documentation=https://github.com/coreos/dex/
+After=postgres.service
+Wants=postgres.service
+
+[Service]
+TimeoutStartSec=20min
+TimeoutStopSec=15
+KillMode=none
+EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/env-dex
+Restart=on-failure
+RestartSec=20s
+
+ExecStartPre=-/usr/bin/docker stop dex-worker
+ExecStartPre=-/usr/bin/docker rm dex-worker
+
+ExecStart=/bin/bash -a -c "/usr/bin/docker run \
+--name dex-worker \
+-p 5556:5556 \
+-e DEX_WORKER_KEY_SECRETS=${DEX_KEY_SECRET} \
+-e DEX_WORKER_DB_URL=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable \
+-e DEX_WORKER_ENABLE_REGISTRATION=true \
+-e DEX_WORKER_LOG_DEBUG=true \
+-e SERVICE_NAME=dexworker \
+-w /opt/dex \
+gaiaadm/dex \
+./bin/dex-worker --email-cfg=./static/fixtures/emailer.json.sample --listen http://0.0.0.0:5556 &"
+
+# ./bin/dex-worker --email-cfg=/tmp/emailer.json --listen http://0.0.0.0:5556 &"
+#ping localhost &"
+
+ExecStop=/usr/bin/docker stop dex-worker
