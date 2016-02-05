@@ -26,7 +26,7 @@ ExecStart=/bin/bash -a -c "/usr/bin/docker run \
 -e SERVICE_NAME=dexworker \
 -w /opt/dex \
 gaiaadm/dex \
-./bin/dex-worker --email-cfg=./static/fixtures/emailer.json.sample --listen http://0.0.0.0:5556 &"
+./bin/dex-worker --email-cfg=./static/fixtures/emailer.json.sample --issuer http://gaia.skydns.local:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 &"
 
 # ./bin/dex-worker --email-cfg=/tmp/emailer.json --listen http://0.0.0.0:5556 &"
 #ping localhost &"
