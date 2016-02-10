@@ -39,10 +39,16 @@ RestartSec=20s
 ExecStartPre=-/usr/bin/docker kill fleet-ui
 ExecStartPre=-/usr/bin/docker rm fleet-ui
 
+# always generate, overwrite and register RSA key for fleet-ui
+ExecStartPre=-/usr/bin/bash -c "echo -e 'y\n' | ssh-keygen -f /home/core/.ssh/id_rsa_fleetui -t rsa -N '' -C 'fleet-ui@skydns' && \
+              cp -f /home/core/.ssh/id_rsa_fleetui.pub /home/core/.ssh/authorized_keys.d && \
+              sudo /usr/bin/update-ssh-keys"
+
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name fleet-ui \
 -p 3200:3000 \
--v ~/.ssh:/root/.ssh \
+-v /home/core/.ssh/id_rsa_fleetui:/root/id_rsa \
+-v /var/run/fleet.sock:/var/run/fleet.sock \
 -e ETCD_PEER=http://${COREOS_PRIVATE_IPV4}:4001 \
 -e SERVICE_NAME=fleet-ui \
 -e SERVICE_TAGS=fleet-ui,dashboard \
