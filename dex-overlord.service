@@ -2,7 +2,7 @@
 Description=Dex-overlord
 Documentation=https://github.com/coreos/dex/
 After=postgres.service
-Wants=postgres.service
+BindsTo=postgres.service
 
 [Service]
 TimeoutStartSec=20min
@@ -28,5 +28,4 @@ ExecStart=/usr/bin/docker run \
 gaiaadm/dex \
 /opt/dex/bin/dex-overlord --admin-listen http://0.0.0.0:5557 --log-debug=true &
 
-#ping google.com"
 ExecStop=/usr/bin/docker stop dex-overlord

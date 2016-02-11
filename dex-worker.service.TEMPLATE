@@ -1,0 +1,46 @@
+[Unit]
+Description=Dex-worker
+Documentation=https://github.com/coreos/dex/
+After=postgres.service
+Wants=postgres.service
+
+[Service]
+TimeoutStartSec=20min
+TimeoutStopSec=15
+KillMode=none
+Environment=GOOGLE_CLIENT_ID=GCI_TEMPLATE
+Environment=GOOGLE_CLIENT_SECRET=GCS_TEMPLATE
+Environment=MAILGUN_PRIVATE_KEY=MPrK_TEMPLATE
+Environment=MAILGUN_PUBLIC_KEY=MPuK_TEMPLATE
+Environment=MAILGUN_DOMAIN=MD_TEMPLATE
+EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/env-dex
+Restart=on-failure
+RestartSec=20s
+
+ExecStartPre=-/usr/bin/docker stop dex-worker
+ExecStartPre=-/usr/bin/docker rm dex-worker
+
+ExecStart=/usr/bin/docker run \
+--name dex-worker \
+-p 5556:5556 \
+-e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+-e GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
+-e MAILGUN_PRIVATE_KEY=${MAILGUN_PRIVATE_KEY} \
+-e MAILGUN_PUBLIC_KEY=${MAILGUN_PUBLIC_KEY} \
+-e MAILGUN_DOMAIN=${MAILGUN_DOMAIN} \
+-e DEX_WORKER_KEY_SECRETS=${DEX_KEY_SECRET} \
+-e DEX_WORKER_DB_URL=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable \
+-e DEX_WORKER_ENABLE_REGISTRATION=true \
+-e DEX_WORKER_LOG_DEBUG=true \
+-e SERVICE_NAME=dexworker \
+-w /opt/dex \
+gaiaadm/dex \
+/bin/sh  -c '/opt/dex/dex-setup.sh \
+&& ./bin/dexctl --db-url=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable set-connector-configs ./static/fixtures/connectors.json \
+&& ./bin/dex-worker --email-cfg=/opt/dex/static/fixtures/emailer.json --issuer http://gaia.skydns.local:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 ' & 
+
+# ./bin/dex-worker --email-cfg=/tmp/emailer.json --listen http://0.0.0.0:5556 &"
+#ping localhost &"
+
+ExecStop=/usr/bin/docker stop dex-worker

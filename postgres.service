@@ -52,7 +52,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e PGDATA=/postgreData/pgdata \
 -e SERVICE_NAME=postgres \
 -v $(/opt/bin/gaia-get-mount-path.sh postgreData-${ENVIRON}):/postgreData \
-postgres:9.5'
+gaiaadm/postgres'
 
 # Stop
 ExecStop=/usr/bin/docker stop postgres

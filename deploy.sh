@@ -82,6 +82,8 @@ function deploy_fleet_unit() {
 }
 
 
+./configure_dex_unit.sh
+
 declare -a core_units=( skydns.service registrator.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
 declare -a all_units=(*.service)
 declare -a other_units=()
