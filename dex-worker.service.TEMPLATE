@@ -8,11 +8,6 @@ Wants=postgres.service
 TimeoutStartSec=20min
 TimeoutStopSec=15
 KillMode=none
-Environment=GOOGLE_CLIENT_ID=GCI_TEMPLATE
-Environment=GOOGLE_CLIENT_SECRET=GCS_TEMPLATE
-Environment=MAILGUN_PRIVATE_KEY=MPrK_TEMPLATE
-Environment=MAILGUN_PUBLIC_KEY=MPuK_TEMPLATE
-Environment=MAILGUN_DOMAIN=MD_TEMPLATE
 EnvironmentFile=/etc/environment
 EnvironmentFile=/etc/env-dex
 Restart=on-failure
@@ -37,10 +32,8 @@ ExecStart=/usr/bin/docker run \
 -w /opt/dex \
 gaiaadm/dex \
 /bin/sh  -c '/opt/dex/dex-setup.sh \
-&& ./bin/dexctl --db-url=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable set-connector-configs ./static/fixtures/connectors.json \
-&& ./bin/dex-worker --email-cfg=/opt/dex/static/fixtures/emailer.json --issuer http://gaia.skydns.local:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 ' & 
+&& /opt/dex/bin/dexctl --db-url=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable set-connector-configs /opt/dex/static/fixtures/connectors.json \
+&& /opt/dex/bin/dex-worker --email-cfg=/opt/dex/static/fixtures/emailer.json --issuer http://gaia.skydns.local:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 ' &
 
-# ./bin/dex-worker --email-cfg=/tmp/emailer.json --listen http://0.0.0.0:5556 &"
-#ping localhost &"
 
 ExecStop=/usr/bin/docker stop dex-worker
