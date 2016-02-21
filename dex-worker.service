@@ -20,6 +20,7 @@ ExecStartPre=-/usr/bin/docker rm dex-worker
 ExecStart=/usr/bin/docker run \
 --name dex-worker \
 -p 5556:5556 \
+-e DOMAIN=${DOMAIN} \
 -e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
 -e GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
 -e MAILGUN_PRIVATE_KEY=${MAILGUN_PRIVATE_KEY} \
@@ -34,7 +35,7 @@ ExecStart=/usr/bin/docker run \
 gaiaadm/dex \
 /bin/sh  -c '/opt/dex/dex-setup.sh \
 && /opt/dex/bin/dexctl --db-url=${DEX_DB_URL} set-connector-configs /opt/dex/static/fixtures/connectors.json \
-&& /opt/dex/bin/dex-worker --email-cfg=/opt/dex/static/fixtures/emailer.json --issuer http://gaia.skydns.local:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 ' &
+&& /opt/dex/bin/dex-worker --email-cfg=/opt/dex/static/fixtures/emailer.json --issuer http://${DOMAIN}:88 --issuer-name Gaia-Dex --listen http://0.0.0.0:5556 ' &
 
 
 ExecStop=/usr/bin/docker stop dex-worker

@@ -9,8 +9,8 @@ TimeoutStartSec=20min
 TimeoutStopSec=15
 KillMode=none
 EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/env-dex
 Environment=DEX_DB_URL=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable
-Environment=STS_CALLBACK_URL=http://gaia.skydns.local:88/sts/callback
 Restart=on-failure
 RestartSec=20s
 
@@ -20,10 +20,11 @@ ExecStartPre=-/usr/bin/docker rm dex-client-config
 ExecStart=/usr/bin/docker run \
 --name dex-client-config \
 --rm=true \
+-e DOMAIN=${DOMAIN} \
 -v /etc:/etc \
 -w /opt/dex \
 gaiaadm/dex \
-/bin/sh -a -c ' if [ ! -r /etc/env-dex-client ]; then /opt/dex/bin/dexctl --db-url=${DEX_DB_URL} new-client ${STS_CALLBACK_URL} > /etc/env-dex-client; /bin/echo RESULT: ; /bin/cat /etc/env-dex-client; else /bin/ls -la /etc/env* ;fi '
+/bin/sh -a -c ' if [ ! -r /etc/env-dex-client ]; then /opt/dex/bin/dexctl --db-url=${DEX_DB_URL} new-client http://${DOMAIN}:88/sts/callback > /etc/env-dex-client; /bin/echo RESULT: ; /bin/cat /etc/env-dex-client; else /bin/ls -la /etc/env* ;fi '
 
 [Install]
 WantedBy=multi-user.target
