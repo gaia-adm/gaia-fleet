@@ -8,11 +8,8 @@ RUN mkdir -p ${gaia}
 
 WORKDIR ${gaia}
 COPY *.service ./
-COPY *.service.TEMPLATE ./
 COPY deploy.sh ./
-COPY configure_dex_unit.sh ./
 RUN chmod +x deploy.sh
-RUN chmod +x configure_dex_unit.sh
 
 # install packages and fleetctl client
 RUN apk update && \
