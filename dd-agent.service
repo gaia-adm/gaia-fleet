@@ -41,7 +41,7 @@ ExecStartPre=-/usr/bin/docker kill dd-agent
 ExecStartPre=-/usr/bin/docker rm dd-agent
 
 # DATADOG_API_KEY is systemd env var, we are set it when provisioning new CoreOS machine
-ExecStart=/usr/bin/docker --name dd-agent -h %H \
+ExecStart=/usr/bin/docker run --name dd-agent -h %H \
 							-v /var/run/docker.sock:/var/run/docker.sock -v /proc/:/host/proc/:ro \
 							-v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro -v /opt/dd-agent-conf.d:/conf.d:ro \
 							-e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
