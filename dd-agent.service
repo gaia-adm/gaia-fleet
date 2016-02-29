@@ -1,4 +1,4 @@
-opyright 2015 HP Software
+# Copyright 2016 HP Software
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ ExecStart=/usr/bin/docker run --name dd-agent -h %H \
 					-v /var/run/docker.sock:/var/run/docker.sock -v /proc/:/host/proc/:ro \
 					-v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro -v /opt/dd-agent-conf.d:/conf.d:ro \
 					-e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
-				    -e API_KEY=${DATADOG_API_KEY} gaiaadm/dd-agent:13-master
+				    -e API_KEY=${DATADOG_API_KEY} gaiaadm/dd-agent:15-master
 
 # Stop
 ExecStop=/usr/bin/docker stop dd-agent
