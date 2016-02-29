@@ -1,0 +1,36 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - sudo apt-get update && sudo apt-get install jq openssl curl
+    # download update_service script 
+    - curl -LO https://raw.githubusercontent.com/gaia-adm/gaia-fleet/master/update_service.sh && chmod +x update_service.sh
+
+  override:
+    - docker build -t gaiaadm/dd-agent:12-master .
+    - docker tag gaiaadm/dd-agent:12-master gaiaadm/dd-agent:12-master:$CIRCLE_BUILD_NUM
+    - docker tag gaiaadm/dd-agent:12-master gaiaadm/dd-agent:12-master:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+
+test:
+  override:
+    - /bin/true
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push gaiaadm/dd-agent:12-master
+      - ./update_service.sh -t $CIRCLE_BRANCH -b $CIRCLE_BUILD_NUM -f dd-agent.service -n dd-agent
+
+notify:
+  webhooks:
+    - url: http://beta.gaiahub.io:88/wh/5a866f9b-98c9-438d-a8d4-53cf4ae9599c/4c310c8e220ee9bead74eece42ce0e109fd3535e
+
+general:
+  branches:
+    only:
+      - master
+
