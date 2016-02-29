@@ -1,36 +1,58 @@
-machine:
-  services:
-    - docker
+opyright 2015 HP Software
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+[Unit]
+Description=custom dd-agent for Gaia
+Documentation=https://github.com/gaia-adm/dd-agent.git
 
-dependencies:
-  pre:
-    - sudo apt-get update && sudo apt-get install jq openssl curl
-    # download update_service script 
-    - curl -LO https://raw.githubusercontent.com/gaia-adm/gaia-fleet/master/update_service.sh && chmod +x update_service.sh
+After=docker.service
+Requires=docker.service
 
-  override:
-    - docker build -t gaiaadm/dd-agent:12-master .
-    - docker tag gaiaadm/dd-agent:12-master gaiaadm/dd-agent:12-master:$CIRCLE_BUILD_NUM
-    - docker tag gaiaadm/dd-agent:12-master gaiaadm/dd-agent:12-master:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+# Large start timeout is to allow for pulling down Docker images from Registry
+TimeoutStartSec=20min
+TimeoutStopSec=15
 
-test:
-  override:
-    - /bin/true
+# Restart policy
+Restart=on-failure
+RestartSec=5
 
-deployment:
-  hub:
-    branch: master
-    commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push gaiaadm/dd-agent:12-master
-      - ./update_service.sh -t $CIRCLE_BRANCH -b $CIRCLE_BUILD_NUM -f dd-agent.service -n dd-agent
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
 
-notify:
-  webhooks:
-    - url: http://beta.gaiahub.io:88/wh/5a866f9b-98c9-438d-a8d4-53cf4ae9599c/4c310c8e220ee9bead74eece42ce0e109fd3535e
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
 
-general:
-  branches:
-    only:
-      - master
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill dd-agent
+ExecStartPre=-/usr/bin/docker rm dd-agent
 
+# DATADOG_API_KEY is systemd env var, we are set it when provisioning new CoreOS machine
+ExecStart=/usr/bin/docker run --name dd-agent -h %H \
+					-v /var/run/docker.sock:/var/run/docker.sock -v /proc/:/host/proc/:ro \
+					-v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro -v /opt/dd-agent-conf.d:/conf.d:ro \
+					-e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+				    -e API_KEY=${DATADOG_API_KEY} gaiaadm/dd-agent:13-master
+
+# Stop
+ExecStop=/usr/bin/docker stop dd-agent
+
+[Install]
+WantedBy=multi-user.target
+
+# deploy and run on all the nodes in the coreos cluster
+[X-Fleet]
+Global=true
