@@ -21,6 +21,6 @@ done
 
 set -o xtrace
 
-f_sha=$(curl -sL "https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}?ref=${branch}" | jq .sha | tr -d '"') && \
+f_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}?ref=${branch}" | jq .sha | tr -d '"') && \
 f_64=$(openssl enc -base64 -A -in <(sed "s/gaiaadm\/${service_name}/gaiaadm\/${service_name}:${build_num}-${branch}/g" ${service_file})) && \
-curl --fail -i -X PUT -H "Authorization: token ${GITHUB_API_TOKEN}" -d "{\"path\": \"${service_file}\", \"message\": \"updating ${service_file} with the new image tag: ${build_num}-${branch}\", \"content\": \"${f_64}\", \"sha\": \"${f_sha}\", \"branch\": \"${branch}\"}" https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}
+curl --fail -S -i -X PUT -H "Authorization: token ${GITHUB_API_TOKEN}" -d "{\"path\": \"${service_file}\", \"message\": \"updating ${service_file} with the new image tag: ${build_num}-${branch}\", \"content\": \"${f_64}\", \"sha\": \"${f_sha}\", \"branch\": \"${branch}\"}" https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}
