@@ -45,8 +45,7 @@ ExecStart=/usr/bin/docker run --name dd-agent -h %H \
 					-v /var/run/docker.sock:/var/run/docker.sock -v /proc/:/host/proc/:ro \
 					-v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro -v /opt/dd-agent-conf.d:/conf.d:ro \
 					-e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
-                                        -e TAGS="gaiaenv:${ENVIRON},gaiaenvlocation:${ENVIRON_LOCATION}" \
-      				        -e API_KEY=${DATADOG_API_KEY} gaiaadm/dd-agent:20-master
+				    -e API_KEY=${DATADOG_API_KEY} gaiaadm/dd-agent:21-master
 
 # Stop
 ExecStop=/usr/bin/docker stop dd-agent
