@@ -1,14 +1,13 @@
 [Unit]
 Description=Dex-overlord
 Documentation=https://github.com/coreos/dex/
-After=postgres.service
-Wants=postgres.service
+After=registrator.service
+Wants=registrator.service
 
 [Service]
 TimeoutStartSec=20min
 TimeoutStopSec=15
 KillMode=none
-Environment=DEX_DB_URL=postgres://dex:dex_pass@postgres.skydns.local:5432/dex_db?sslmode=disable
 EnvironmentFile=/etc/environment
 EnvironmentFile=/etc/env-dex
 Restart=on-failure
@@ -22,7 +21,7 @@ ExecStart=/usr/bin/docker run \
 -p 5557:5557 \
 -e DEX_OVERLORD_ADMIN_API_SECRET=${DEX_OVERLORD_ADMIN_API_SECRET} \
 -e DEX_OVERLORD_KEY_SECRETS=${DEX_KEY_SECRET} \
--e DEX_OVERLORD_DB_URL=${DEX_DB_URL} \
+-e DEX_OVERLORD_DB_URL=postgres://dex:dex_pass@${DB_ALIAS}/dex_db?sslmode=disable \
 -e DEX_OVERLORD_KEY_PERIOD=1h \
 -e DEX_OVERLORD_LOG_DEBUG=true \
 -e SERVICE_NAME=dexoverlord \
@@ -33,4 +32,3 @@ ExecStop=/usr/bin/docker stop dex-overlord
 
 [Install]
 WantedBy=multi-user.target
-
