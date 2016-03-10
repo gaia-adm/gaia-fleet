@@ -97,7 +97,9 @@ for u in ${all_units[@]}; do
     # for template add two units
     if [[ $u =~ "@.service" ]]; then
       other_units+=(${u/@.service/@1.service})
-      other_units+=(${u/@.service/@2.service})
+      if [[ $(fleetctl list-machines | grep -v MACHINE  | wc -l) -gt 1 ]]; then
+        other_units+=(${u/@.service/@2.service})
+      fi
     else
       other_units+=($u)
     fi
