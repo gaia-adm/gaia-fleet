@@ -23,7 +23,7 @@ ExecStart=/usr/bin/docker run \
 -v /etc:/etc \
 -w /opt/dex \
 gaiaadm/dex \
-/bin/sh -a -c ' if [ ! -s /etc/env-dex-client ]; then /opt/dex/bin/dexctl --db-url=postgres://dex:dex_pass@${DB_ALIAS}/dex_db?sslmode=disable new-client http://${DOMAIN}:88/sts/callback > /etc/env-dex-client; /bin/echo RESULT: ; /bin/cat /etc/env-dex-client; else /bin/ls -la /etc/env* ;fi ; if [ -s /etc/env-dex-client ]; then echo OK ; else echo NOT OK; exit -123 ; fi '
+/bin/sh -a -c ' if [ ! -s /etc/env-dex-client ]; then /opt/dex/bin/dexctl --db-url=postgres://dex:dex_pass@${DB_ALIAS}/dex_db?sslmode=disable new-client https://${DOMAIN}:444/sts/callback > /etc/env-dex-client; /bin/echo RESULT: ; /bin/cat /etc/env-dex-client; else /bin/ls -la /etc/env* ;fi ; if [ -s /etc/env-dex-client ]; then echo OK ; else echo NOT OK; exit -123 ; fi '
 
 [Install]
 WantedBy=multi-user.target
