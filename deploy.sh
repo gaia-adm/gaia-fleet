@@ -113,7 +113,7 @@ isAWS=$(systemctl show-environment | grep AWS_ | wc -l)
 
 for unit in ${units[@]}; do
   echo "depoyment of: $unit"
-  if { [[ isAWS -eq 2 ]] && [[ $unit =~ ".vagrant.service" ]]; }; then
+  if { [[ $isAWS -eq 2 ]] && [[ $unit =~ ".vagrant.service" ]]; }; then
     deploy_fleet_unit $unit
   else
     echo deployment is not needed on AWS environment
