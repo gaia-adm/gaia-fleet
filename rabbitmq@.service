@@ -71,3 +71,4 @@ WantedBy=multi-user.target
 [X-Fleet]
 # Don't schedule on the same machine as other RabbitMQ instances
 Conflicts=rabbitmq@*.service
+MachineMetadata=purpose=rabbitmq

@@ -58,3 +58,10 @@ gaiaadm/postgres'
 ExecStop=/usr/bin/docker stop postgres
 ExecStop=-/opt/bin/gaia-unmount.sh postgreData-${ENVIRON}
 ExecStopPost=-/opt/bin/gaia-unmount.sh postgreData-${ENVIRON}
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=purpose=general
+

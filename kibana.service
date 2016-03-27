@@ -54,3 +54,7 @@ ExecStop=/usr/bin/docker stop kibana
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=purpose=general
+

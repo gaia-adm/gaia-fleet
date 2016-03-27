@@ -32,3 +32,6 @@ ExecStop=/usr/bin/docker stop dex-overlord
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=purpose=general

@@ -63,3 +63,7 @@ ExecStop=/usr/bin/docker stop sts
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=purpose=general
+
