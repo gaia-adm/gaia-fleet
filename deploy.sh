@@ -93,7 +93,7 @@ function deploy_fleet_unit() {
 }
 
 
-declare -a core_units=( skydns.service registrator.service postgres.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
+declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
 declare -a all_units=(*.service)
 declare -a other_units=()
 
