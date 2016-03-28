@@ -10,14 +10,14 @@ fi
 
 # get environment from outside: from CLI argument or env variable - for docker
 # run docker on vagrant -e fleetenv=vagrant
-environ=$1
-if [[ -z "$environ" ]]; then
-  environ=$fleetenv
+fleetenv=$1
+if [[ -z "$fleetenv" ]]; then
+  fleetenv=$environ
 fi
-if [[ -z "$environ" ]]; then
+if [[ -z "$fleetenv" ]]; then
   echo Running on AWS by default
 else
-  echo Running on $environ
+  echo Running on $fleetenv
 fi
 
 # start fleet unit and wait till 'active' and 'running'
@@ -124,7 +124,7 @@ for unit in ${units[@]}; do
   echo "depoyment of: $unit"
   case "$unit" in
     *.vagrant.service )
-      if [[ "$environ" = "vagrant" ]]; then
+      if [[ "$fleetenv" = "vagrant" ]]; then
         deploy_fleet_unit $unit
       fi
       ;;
