@@ -8,6 +8,17 @@ if [ -z "$FLEETCTL_ENDPOINT" ]; then
   export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
 fi
 
+# get environment from outside: from CLI argument or env variable - for docker
+# run docker on vagrant -e fleetenv=vagrant
+environ=$1
+if [[ -z "$environ" ]]; then
+  environ=$fleetenv
+fi
+if [[ -z "$environ" ]]; then
+  echo Running on AWS by default
+else
+  echo Running on $environ
+fi
 
 # start fleet unit and wait till 'active' and 'running'
 function start_fleet_unit() {
@@ -108,16 +119,22 @@ done
 
 units=( ${core_units[@]} ${other_units[@]} )
 
-isAWS=$(systemctl show-environment | grep AWS_ | wc -l) 
-
 
 for unit in ${units[@]}; do
   echo "depoyment of: $unit"
-  if { [[ $isAWS -eq 2 ]] && [[ $unit =~ ".vagrant.service" ]]; }; then
-    deploy_fleet_unit $unit
-  else
-    echo deployment is not needed on AWS environment
-  fi
+  case "$unit" in
+    "*.vagrant.service")
+      if [[ "$environ" = "vagrant" ]]; then
+        deploy_fleet_unit $unit
+      fi
+      ;;
+    "*.service")
+      deploy_fleet_unit $unit
+      ;;
+    *)
+      echo not supported file name
+      ;;
+   esac
 done
 
 
