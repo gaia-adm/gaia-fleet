@@ -123,15 +123,15 @@ units=( ${core_units[@]} ${other_units[@]} )
 for unit in ${units[@]}; do
   echo "depoyment of: $unit"
   case "$unit" in
-    "*.vagrant.service")
+    *.vagrant.service )
       if [[ "$environ" = "vagrant" ]]; then
         deploy_fleet_unit $unit
       fi
       ;;
-    "*.service")
+    *.service )
       deploy_fleet_unit $unit
       ;;
-    *)
+    * )
       echo not supported file name
       ;;
    esac
