@@ -67,5 +67,5 @@ ExecStopPost=-/opt/bin/gaia-unmount.sh result-upload-${ENVIRON}
 WantedBy=multi-user.target
 
 [X-Fleet]
-MachineMetadata=purpose=general
+MachineMetadata=general=true
 

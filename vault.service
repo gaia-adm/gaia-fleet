@@ -75,5 +75,5 @@ ExecStop=/usr/bin/docker stop vault
 WantedBy=multi-user.target
 
 [X-Fleet]
-MachineMetadata=purpose=general
+MachineMetadata=general=true
 

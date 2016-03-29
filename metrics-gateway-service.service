@@ -63,5 +63,5 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
-MachineMetadata=purpose=general
+MachineMetadata=general=true
 

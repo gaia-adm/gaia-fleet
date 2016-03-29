@@ -65,5 +65,5 @@ ExecStop=/usr/bin/docker stop sts
 WantedBy=multi-user.target
 
 [X-Fleet]
-MachineMetadata=purpose=general
+MachineMetadata=general=true
 
