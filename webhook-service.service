@@ -52,7 +52,7 @@ ExecStart=/usr/bin/docker run \
 -e SERVICE_NAME=whs \
 -e SERVICE_TAGS=master \
 -e LOG_LEVEL=DEBUG \
-gaiaadm/whs:21-master
+gaiaadm/whs:23-master
 
 # Stop
 ExecStop=/usr/bin/docker stop whs
@@ -62,4 +62,5 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
+MachineMetadata=general=true
 
