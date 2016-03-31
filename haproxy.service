@@ -48,7 +48,7 @@ ExecStart=/usr/bin/docker run \
  -e SERVICE_443_NAME=sproxy \
  -e SERVICE_1936_NAME=statsproxy \
  -v /dev/log:/dev/log \
- gaiaadm/haproxy:30-master
+ gaiaadm/haproxy:31-master
 
 # Stop
 ExecStop=/usr/bin/docker stop haproxy
@@ -58,4 +58,5 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
+MachineMetadata=general=true
 
