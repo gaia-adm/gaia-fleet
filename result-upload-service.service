@@ -56,7 +56,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e STORAGE_PATH=/upload \
 -e LOG_LEVEL=INFO \
 -v $(/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}):/upload \
-gaiaadm/result-upload-service:54-master'
+gaiaadm/result-upload-service:57-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop result-upload-service
@@ -65,5 +65,5 @@ ExecStopPost=-/opt/bin/gaia-unmount.sh result-upload-${ENVIRON}
 
 [Install]
 WantedBy=multi-user.target
-
+MachineMetadata=general=true
 
