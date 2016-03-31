@@ -53,7 +53,7 @@ ExecStart=/usr/bin/docker run \
 -e authServer=sts.skydns.local:8080 \
 -e SERVICE_NAME=mgs \
 -e SERVICE_TAGS=master \
-gaiaadm/mgs:122-master
+gaiaadm/mgs:123-master
 
 # Stop
 ExecStop=/usr/bin/docker stop mgs
@@ -63,4 +63,5 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 Global=true
+MachineMetadata=general=true
 
