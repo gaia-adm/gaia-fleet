@@ -53,7 +53,7 @@ ExecStart=/usr/bin/docker run \
 -e authServer=sts.skydns.local:8080 \
 -e SERVICE_NAME=mgs \
 -e SERVICE_TAGS=master \
-gaiaadm/mgs:123-master
+gaiaadm/mgs:124-master
 
 # Stop
 ExecStop=/usr/bin/docker stop mgs
