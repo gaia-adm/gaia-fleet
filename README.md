@@ -31,11 +31,14 @@ For example:
 ## Deploy and Update Gaia Services on CoreOS cluster
 
 In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts. 
-
+* For AWS:
 ```
 docker run -it --rm=true --name=gaiacd gaiaadm/gaia-fleet
 ```
-
+* For vagrant:
+```
+docker run -it --rm=true -e environ=vagrant --name=gaiacd gaiaadm/gaia-fleet
+```
 To watch the deployment progress you can run the following command inside other SSH session on any machine that can conect to CoreOS cluster.
 
 ```

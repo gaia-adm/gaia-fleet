@@ -67,3 +67,7 @@ ExecStopPost=-/opt/bin/gaia-unmount.sh es-${ENVIRON}
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=elasticsearch=true
+

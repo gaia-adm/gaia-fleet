@@ -8,6 +8,17 @@ if [ -z "$FLEETCTL_ENDPOINT" ]; then
   export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
 fi
 
+# get environment from outside: from CLI argument or env variable - for docker
+# run docker on vagrant -e fleetenv=vagrant
+fleetenv=$1
+if [[ -z "$fleetenv" ]]; then
+  fleetenv=$environ
+fi
+if [[ -z "$fleetenv" ]]; then
+  echo Running on AWS by default
+else
+  echo Running on $fleetenv
+fi
 
 # start fleet unit and wait till 'active' and 'running'
 function start_fleet_unit() {
@@ -82,7 +93,7 @@ function deploy_fleet_unit() {
 }
 
 
-declare -a core_units=( skydns.service registrator.service postgres.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
+declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
 declare -a all_units=(*.service)
 declare -a other_units=()
 
@@ -108,9 +119,22 @@ done
 
 units=( ${core_units[@]} ${other_units[@]} )
 
+
 for unit in ${units[@]}; do
   echo "depoyment of: $unit"
-  deploy_fleet_unit $unit
+  case "$unit" in
+    *.vagrant.service )
+      if [[ "$fleetenv" = "vagrant" ]]; then
+        deploy_fleet_unit $unit
+      fi
+      ;;
+    *.service )
+      deploy_fleet_unit $unit
+      ;;
+    * )
+      echo not supported file name
+      ;;
+   esac
 done
 
 
