@@ -39,10 +39,10 @@ RestartSec=20s
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill es-%i
-ExecStartPre=-/usr/bin/docker rm es-%1
+ExecStartPre=-/usr/bin/docker rm es-%i
 ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
-ExecStartPre=/opt/bin/gaia-mount.sh es-%1-${ENVIRON}
+ExecStartPre=/opt/bin/gaia-mount.sh es-%i-${ENVIRON}
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name es-%i \
