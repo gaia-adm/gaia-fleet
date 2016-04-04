@@ -112,6 +112,7 @@ for u in ${all_units[@]}; do
         other_units+=(${u/@.service/@2.service})
         if [[ $u =~ "es@.service" ]]; then
           other_units+=(${u/@.service/@3.service})
+        fi
       fi
     else
       other_units+=($u)
