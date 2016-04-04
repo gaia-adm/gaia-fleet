@@ -50,7 +50,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -v $(/opt/bin/gaia-get-mount-path.sh es-${ENVIRON}/data):/usr/share/elasticsearch/data \
 -e SERVICE_NAME=es \
 -e SERVICE_TAGS=master \
-elasticsearch:2.1.0 elasticsearch -Des.network.bind_host=0.0.0.0'
+elasticsearch:2.1.0 elasticsearch -Des.network.bind_host=0.0.0.0 -Des.cluster.name=${ENVIRON}'
 
 # Apply ES template that contains mappings rules fits to gaia indexes (non analyzed fields, timestamp should be recognized as date field)
 ExecStartPost=/bin/bash -c ' \
