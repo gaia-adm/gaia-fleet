@@ -110,6 +110,8 @@ for u in ${all_units[@]}; do
       other_units+=(${u/@.service/@1.service})
       if [[ $(fleetctl list-machines | grep -v MACHINE  | wc -l) -gt 1 ]]; then
         other_units+=(${u/@.service/@2.service})
+        if [[ $u =~ "es@.service" ]]; then
+          other_units+=(${u/@.service/@3.service})
       fi
     else
       other_units+=($u)
