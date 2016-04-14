@@ -1,3 +1,4 @@
+[![Circle CI](https://circleci.com/gh/gaia-adm/gaia-fleet.svg?style=svg)](https://circleci.com/gh/gaia-adm/gaia-fleet)
 [![](https://badge.imagelayers.io/gaiaadm/gaia-fleet:latest.svg)](https://imagelayers.io/?images=gaiaadm/gaia-fleet:latest 'Get your own badge on imagelayers.io')
 
 # Gaia Fleet
