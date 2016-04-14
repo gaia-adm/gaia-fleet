@@ -41,7 +41,7 @@ ExecStartPre=-/usr/bin/docker rm mr-burns-distributor
 ExecStart=/usr/bin/docker run \
 --name mr-burns-distributor \
 -v "$PWD":/go/src/github.com/gaia-adm/mr-burns-distributor \
--v '/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
+-v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
 -w /go/src/github.com/gaia-adm/mr-burns-distributor \
 -p 18000:8000 \
 mr-burns-distributor
