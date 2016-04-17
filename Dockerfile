@@ -1,7 +1,5 @@
-FROM alpine:3.2
+FROM alpine:3.3
 MAINTAINER Alexei Ledenev <alexei.led@gmail.com>
-
-ENV FLEET_VERSION 0.11.5
 
 ENV gaia /home/gaia
 RUN mkdir -p ${gaia}
@@ -11,12 +9,9 @@ COPY *.service ./
 COPY deploy.sh ./
 RUN chmod +x deploy.sh
 
-# install packages and fleetctl client
-RUN apk update && \
-    apk add curl openssl bash && \
-    rm -rf /var/cache/apk/* && \
-    curl -L "https://github.com/coreos/fleet/releases/download/v${FLEET_VERSION}/fleet-v${FLEET_VERSION}-linux-amd64.tar.gz" | tar xz && \
-    mv fleet-v${FLEET_VERSION}-linux-amd64/fleetctl /usr/local/bin/ && \
-    rm -rf fleet-v${FLEET_VERSION}-linux-amd64
+# install bash
+RUN apk --update add bash \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm /var/cache/apk/*
 
 CMD ["/bin/bash", "deploy.sh"]

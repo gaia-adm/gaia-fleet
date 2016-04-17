@@ -11,13 +11,19 @@ fi
 # get environment from outside: from CLI argument or env variable - for docker
 # run docker on vagrant -e fleetenv=vagrant
 fleetenv=$1
-if [[ -z "$fleetenv" ]]; then
+if [[ -z "${fleetenv}" ]]; then
   fleetenv=$environ
 fi
-if [[ -z "$fleetenv" ]]; then
+if [[ -z "${fleetenv}" ]]; then
   echo Running on AWS by default
 else
-  echo Running on $fleetenv
+  echo Running on ${fleetenv}
+fi
+
+# check if fleetctl fleet client is mounted into the container
+if [[ ! -f /usr/bin/fleetctl ]]; then
+  echo "fleetctl is not mounted, mount it with '-v /usr/bin/fleetctl:/usr/bin/fleetctl'"
+  exit -1
 fi
 
 # start fleet unit and wait till 'active' and 'running'
