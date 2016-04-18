@@ -31,14 +31,16 @@ For example:
 
 ## Deploy and Update Gaia Services on CoreOS cluster
 
-In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts. 
+`gaia-fleet` container requires `fleetctl` Fleet client to be avaiable inside the container. The idea is to use `fleetctl` from host machine, adding volume mapping `-v /usr/bin/fleetctl:/usr/bin/fleetctl` to `docker run` command.
+
+In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts.
 * For AWS:
 ```
-docker run -it --rm=true --name=gaiacd gaiaadm/gaia-fleet
+docker run -it --rm --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet
 ```
 * For vagrant:
 ```
-docker run -it --rm=true -e environ=vagrant --name=gaiacd gaiaadm/gaia-fleet
+docker run -it --rm -e environ=vagrant --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet
 ```
 To watch the deployment progress you can run the following command inside other SSH session on any machine that can conect to CoreOS cluster.
 
