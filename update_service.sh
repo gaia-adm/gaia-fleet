@@ -22,7 +22,7 @@ done
 set -o xtrace
 
 # create branch, if missing in gaia-fleet
-master_sha=$(curl --fail -s -S -L https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs/heads/master | jq .object.sha )
+master_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs/heads/master" | jq .object.sha )
 branch_missing=$(curl -I -s https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs/heads/${branch} | grep '404 Not Found' | wc -l)
 if (( $branch_missing > 0 )); then
 	curl -XPOST -H "Authorization: token ${GITHUB_API_TOKEN}" -H "Content-Type: application/json" -H "Accept: application/vnd.github.v3+json" -d '{"ref": "refs/heads/${branch}", "sha": $master_sha}' https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs
