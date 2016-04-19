@@ -1,4 +1,7 @@
-FROM alpine:3.3
+# (!) IMPORTANT
+# Use frolvlad/alpine-glibc Alpine image: it contains glibc (not only musl)
+# glibc is required to run mounted host binaries, like: docker, fleetctl, etcdctl
+FROM frolvlad/alpine-glibc:alpine-3.3_glibc-2.23
 MAINTAINER Alexei Ledenev <alexei.led@gmail.com>
 
 ENV gaia /home/gaia
