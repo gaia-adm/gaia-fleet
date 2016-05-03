@@ -36,11 +36,11 @@ For example:
 In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts.
 * For AWS:
 ```
-docker run -it --rm --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet
+docker run -it --rm --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:master
 ```
 * For vagrant:
 ```
-docker run -it --rm -e environ=vagrant --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet
+docker run -it --rm -e environ=vagrant --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:master
 ```
 To watch the deployment progress you can run the following command inside other SSH session on any machine that can conect to CoreOS cluster.
 
@@ -48,7 +48,9 @@ To watch the deployment progress you can run the following command inside other 
 whatch -n 3 `fleetctl list-unit-files && echo "====================" && fleetctl list-units`
 ```
 
-**Note**: This feature is under development and the deployment procedure will be changed soon.
+**Note 1**: When gaia-fleet is updated automatically from non-master branches of other repositories, the "latest" tag points to non-master default; in order to run the latest image of master branch, "master" tag should be mentioned explicitely.
+
+**Note 2**: This feature is under development and the deployment procedure will be changed soon.
 
 ## DNS setup
 

@@ -21,6 +21,13 @@ done
 
 set -o xtrace
 
+# create branch, if missing in gaia-fleet
+master_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs/heads/master" | jq .object.sha | tr -d '"')
+branch_missing=$(curl -I -s https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs/heads/${branch} | grep '404 Not Found' | wc -l)
+if (( $branch_missing > 0 )); then
+	curl -XPOST -H "Authorization: token ${GITHUB_API_TOKEN}" -H "Content-Type: application/json" -H "Accept: application/vnd.github.v3+json" -d '{"ref": "refs/heads/'${branch}'", "sha": "'$master_sha'"}' https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs
+fi
+
 f_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}?ref=${branch}" | jq .sha | tr -d '"') && \
 f_64=$(openssl enc -base64 -A -in <(sed "s/gaiaadm\/${service_name}/gaiaadm\/${service_name}:${build_num}-${branch}/g" ${service_file})) && \
 curl --fail -S -i -X PUT -H "Authorization: token ${GITHUB_API_TOKEN}" -d "{\"path\": \"${service_file}\", \"message\": \"updating ${service_file} with the new image tag: ${build_num}-${branch}\", \"content\": \"${f_64}\", \"sha\": \"${f_sha}\", \"branch\": \"${branch}\"}" https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}

@@ -16,7 +16,7 @@ ExecStartPre=-/usr/bin/docker rm es-%i
 ExecStartPre=/usr/bin/docker pull gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-tools-${ENVIRON_LOCATION}
 ExecStartPre=/opt/bin/gaia-mount.sh es-%i-${ENVIRON}
-ExecStart=/bin/bash -a -c '/usr/bin/docker run  --name es-%i  -p 9300:9300 -p 9200:9200  -v $(/opt/bin/gaia-get-mount-path.sh es-%i-${ENVIRON}/data):/usr/share/elasticsearch/data  -e AWS_REGION=${AWS_REGION} -e AWS_ACCESS_KEY_ID=$(systemctl show-environment | grep AWS_ACCESS_KEY= | cut -d "=" -f 2) -e AWS_SECRET_ACCESS_KEY=$(systemctl show-environment | grep AWS_SECRET_KEY= | cut -d "=" -f 2) -e ES_HEAP_SIZE=$(($( /usr/bin/cat /proc/meminfo | head -1 | tr -s " " | cut -d " " -f 2) / 2 / 1024 ))m -e SERVICE_NAME=es  -e SERVICE_TAGS=master,es-node-%i  gaiaadm/elasticsearch elasticsearch -Des.network.bind_host=0.0.0.0 -Des.cluster.name=${ENVIRON} -Des.node.name=${ENVIRON}-%i'
+ExecStart=/bin/bash -a -c 'if [[ $(systemctl show-environment | grep ENVIRON_LOCATION | cut -d= -f2) == "vagrant" ]]; then nethost=-Des.network.host=0.0.0.0;  fi; /usr/bin/docker run  --name es-%i  -p 9300:9300 -p 9200:9200  -v $(/opt/bin/gaia-get-mount-path.sh es-%i-${ENVIRON}/data):/usr/share/elasticsearch/data  -e AWS_REGION=${AWS_REGION} -e AWS_ACCESS_KEY_ID=$(systemctl show-environment | grep AWS_ACCESS_KEY= | cut -d "=" -f 2) -e AWS_SECRET_ACCESS_KEY=$(systemctl show-environment | grep AWS_SECRET_KEY= | cut -d "=" -f 2) -e ES_HEAP_SIZE=$(($( /usr/bin/cat /proc/meminfo | head -1 | tr -s " " | cut -d " " -f 2) / 2 / 1024 ))m -e SERVICE_NAME=es  -e SERVICE_TAGS=master,es-node-%i  gaiaadm/elasticsearch elasticsearch $nethost -Des.network.bind_host=0.0.0.0 -Des.cluster.name=${ENVIRON} -Des.node.name=${ENVIRON}-%i'
 ExecStartPost=/bin/bash -c '    echo "es fleet unit - ExecStartPost - sleep looping until ES is up and running";    until [ "$(curl -o /dev/null --silent --write-out %{http_code} http://localhost:9200/_cluster/state)" -eq "200" ]; do sleep 0.1; done;    echo "es fleet unit - ExecStartPost - ES is up and running - going to apply gaia mapping using REST API";    /bin/curl -H "Content-Type: application/json" --silent -X POST -d "{\\\"template\\\":\\\"gaia*\\\",\\\"mappings\\\":{\\\"_default_\\\":{\\\"dynamic_templates\\\":[{\\\"strings\\\":{\\\"match_mapping_type\\\":\\\"string\\\",\\\"mapping\\\":{\\\"type\\\":\\\"string\\\",\\\"index\\\":\\\"not_analyzed\\\"}}},{\\\"timestamp_field\\\":{\\\"match\\\":\\\"timestamp\\\",\\\"mapping\\\":{\\\"type\\\":\\\"date\\\"}}}]}}}" http://localhost:9200/_template/gaia_template;    echo "\nes fleet unit - ExecStartPost - finished applying gaia mapping using REST API"'
 ExecStop=/usr/bin/docker stop es-%i
 ExecStop=-/opt/bin/gaia-unmount.sh es-%i-${ENVIRON}
@@ -26,6 +26,6 @@ ExecStopPost=-/opt/bin/gaia-unmount.sh es-%i-${ENVIRON}
 WantedBy=multi-user.target
 
 [X-Fleet]
-Conflicts=es@.service
+Conflicts=es@*.service
 MachineMetadata=elasticsearch=true
 
