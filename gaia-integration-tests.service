@@ -30,7 +30,7 @@ KillMode=none
 ExecStartPre=-/usr/bin/docker stop gaia-integration-tests
 ExecStartPre=-/usr/bin/docker rm gaia-integration-tests
 
-ExecStart=/usr/bin/docker pull gaiaadm/gaia-integration-tests:79-master
+ExecStart=/usr/bin/docker pull gaiaadm/gaia-integration-tests:80-master
 
 # Stop
 ExecStop=/usr/bin/docker stop gaia-integration-tests
