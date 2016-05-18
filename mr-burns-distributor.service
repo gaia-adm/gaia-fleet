@@ -45,7 +45,7 @@ ExecStart=/usr/bin/docker run \
 -w /go/src/github.com/gaia-adm/mr-burns-distributor \
 -p 18000:8000 \
 -e SERVICE_NAME=distributor \
-mr-burns-distributor
+gaiaadm/mr-burns-distributor:84-master
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns-distributor
