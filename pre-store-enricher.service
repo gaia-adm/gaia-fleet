@@ -47,7 +47,7 @@ ExecStart=/usr/bin/docker run \
 --name pse \
 -e SERVICE_NAME=pse \
 -e SERVICE_TAGS=master \
-gaiaadm/pre-store-enricher:59-master
+gaiaadm/pre-store-enricher:60-master
 
 # Stop
 ExecStop=/usr/bin/docker stop pse
