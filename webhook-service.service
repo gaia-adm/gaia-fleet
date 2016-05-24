@@ -52,7 +52,7 @@ ExecStart=/usr/bin/docker run \
 -e SERVICE_NAME=whs \
 -e SERVICE_TAGS=master \
 -e LOG_LEVEL=DEBUG \
-gaiaadm/whs:83-master
+gaiaadm/whs:84-master
 
 # Stop
 ExecStop=/usr/bin/docker stop whs
