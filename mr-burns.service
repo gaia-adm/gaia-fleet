@@ -41,7 +41,7 @@ ExecStartPre=-/usr/bin/docker rm mr-burns
 ExecStart=/usr/bin/docker run \
 --name mr-burns \
 -v /var/run/docker.sock:/var/run/docker.sock \
-gaiaadm/mr-burns:140-master
+gaiaadm/mr-burns:141-master
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
