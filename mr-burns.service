@@ -40,10 +40,8 @@ ExecStartPre=-/usr/bin/docker rm mr-burns
 
 ExecStart=/usr/bin/docker run \
 --name mr-burns \
--v "$PWD":/go/src/github.com/gaia-adm/mr-burns \
 -v /var/run/docker.sock:/var/run/docker.sock \
---link mr-burns-distributor:distributor-link \
-gaiaadm/mr-burns:136-master
+gaiaadm/mr-burns:137-master
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
