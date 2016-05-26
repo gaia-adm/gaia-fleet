@@ -40,8 +40,9 @@ ExecStartPre=-/usr/bin/docker rm mr-burns
 
 ExecStart=/bin/bash -a -c 'docker run  \
 --name mr-burns \
+--log-driver=json-file \
 -v /var/run/docker.sock:/var/run/docker.sock \
-gaiaadm/mr-burns:145-master
+gaiaadm/mr-burns:146-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
