@@ -38,13 +38,13 @@ RestartSec=20s
 ExecStartPre=-/usr/bin/docker stop mr-burns-distributor
 ExecStartPre=-/usr/bin/docker rm mr-burns-distributor
 
-ExecStart=/usr/bin/docker run \
+ExecStart=/bin/bash -a -c 'docker run  \
 --name mr-burns-distributor \
 --log-driver=json-file \
 -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
 -p 8000:8000 \
 -e SERVICE_NAME=distributor \
-gaiaadm/mr-burns-distributor:93-master
+gaiaadm/mr-burns-distributor:94-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns-distributor
