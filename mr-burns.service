@@ -44,7 +44,7 @@ ExecStart=/bin/bash -a -c 'docker run  \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /tmp:/tmp \
 -v /etc/environment:/etc/environment \
-gaiaadm/mr-burns:154-master'
+gaiaadm/mr-burns:155-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
