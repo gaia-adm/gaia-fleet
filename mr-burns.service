@@ -43,7 +43,7 @@ ExecStart=/bin/bash -a -c 'docker run  \
 --log-driver=json-file \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /tmp:/tmp
-gaiaadm/mr-burns:152-master'
+gaiaadm/mr-burns:153-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
