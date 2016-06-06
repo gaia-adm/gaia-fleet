@@ -41,7 +41,7 @@ ExecStartPre=-/usr/bin/docker rm ssm_agent
 
 ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --name ssm_agent \
--d -v /var/run/dbus:/var/run/dbus \
+-v /var/run/dbus:/var/run/dbus \
 -v /run/systemd:/run/systemd \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v $(which docker):/usr/bin/docker \
