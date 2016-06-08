@@ -54,7 +54,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e MGS_SERVER=mgs.skydns.local:8080 \
 -e LOG_LEVEL=INFO \
 -v $(/opt/bin/gaia-get-mount-path.sh result-upload-${ENVIRON}):/upload \
-gaiaadm/agm-issue-change-processor:23-master'
+gaiaadm/agm-issue-change-processor:24-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop agm-issue-change-processor
