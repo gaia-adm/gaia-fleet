@@ -137,7 +137,15 @@ for unit in ${units[@]}; do
         deploy_fleet_unit $unit
       fi
       ;;
+    *.aws.service )
+      if [[ "$fleetenv" != "vagrant" ]]; then
+        deploy_fleet_unit $unit
+      fi
+      ;;
     *.service )
+      deploy_fleet_unit $unit
+      ;;
+    *.timer )
       deploy_fleet_unit $unit
       ;;
     * )
