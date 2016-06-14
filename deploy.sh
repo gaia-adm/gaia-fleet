@@ -101,7 +101,7 @@ function deploy_fleet_unit() {
 
 declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service )
 declare -a all_units=(*.service)
-declare -a other_units=()
+declare -a other_units=(backup-elastic.aws.timer)
 
 for u in ${all_units[@]}; do
   found=1
@@ -137,7 +137,15 @@ for unit in ${units[@]}; do
         deploy_fleet_unit $unit
       fi
       ;;
+    *.aws.service )
+      if [[ "$fleetenv" != "vagrant" ]]; then
+        deploy_fleet_unit $unit
+      fi
+      ;;
     *.service )
+      deploy_fleet_unit $unit
+      ;;
+    *.timer )
       deploy_fleet_unit $unit
       ;;
     * )

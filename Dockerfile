@@ -9,6 +9,7 @@ RUN mkdir -p ${gaia}
 
 WORKDIR ${gaia}
 COPY *.service ./
+COPY *.timer ./
 COPY deploy.sh ./
 RUN chmod +x deploy.sh
 
