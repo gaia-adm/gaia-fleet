@@ -3,7 +3,7 @@ Description=Run backup-elastic service once a day
 After=backup-elastic.aws.service
 
 [Timer]
-OnCalendar=Mon,Wed,Sat *-*-* 09:20:00
+OnCalendar=Mon,Tue,Wed,Sat *-*-* 11:20:00
 Persistent=true
 
 [Install]
