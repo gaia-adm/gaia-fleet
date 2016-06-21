@@ -12,7 +12,7 @@ EnvironmentFile=/etc/environment
 
 ExecStartPre=-/usr/bin/docker stop backup-elastic
 ExecStartPre=-/usr/bin/docker rm backup-elastic
-ExecStart=/usr/bin/docker run --rm --name backup-elastic gaiaadm/backup-elastic:4-master /bin/bash -ac './backup-elastic.sh'
+ExecStart=/usr/bin/docker run --rm --name backup-elastic gaiaadm/backup-elastic:5-master /bin/bash -ac './backup-elastic.sh'
 
 # Stop
 ExecStop=-/usr/bin/docker kill backup-elastic
