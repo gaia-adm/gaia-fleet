@@ -1,0 +1,25 @@
+[Unit]
+Description=Backup Etcd
+Documentation=https://github.com/gaia-adm/backup-etcd
+After=registrator.service
+Wants=registrator.service
+
+[Service]
+Type=oneshot
+Restart=no
+EnvironmentFile=/etc/environment
+
+ExecStart=/bin/bash -a -c '/usr/bin/docker run --rm=true \
+-e AWS_ACCESS_KEY_ID=$(systemctl show-environment | grep AWS_ACCESS_KEY= | cut -d "=" -f 2) \
+-e AWS_SECRET_ACCESS_KEY=$(systemctl show-environment | grep AWS_SECRET_KEY= | cut -d "=" -f 2) \
+-e AWS_DEFAULT_REGION=$(z=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) ; len=$(($(echo "$z" | wc -m) - 2)) ; reg=$(echo $z | cut -c 1-$len) ; echo $reg) \
+-e DOMAIN=$(systemctl show-environment | grep DOMAIN= | cut -d "=" -f 2) \
+-e ENVIRON=$(systemctl show-environment | grep ENVIRON= | cut -d "=" -f 2) \
+-e ETCDCTL_ENDPOINT=${COREOS_PRIVATE_IPV4}:4001 \
+gaiaadm/backup-etcd:18-master ./main.sh -a backup -k /tenants,/webhooks,/clientdetails,/accesstokens'
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=general=true
