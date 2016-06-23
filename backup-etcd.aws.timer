@@ -1,0 +1,13 @@
+[Unit]
+Description=Run backup-etcd service once a day
+After=backup-etcd.aws.service
+
+[Timer]
+OnCalendar=Mon,Wed,Sat *-*-* 03:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+[X-Fleet]
+MachineOf=backup-etcd.aws.service
