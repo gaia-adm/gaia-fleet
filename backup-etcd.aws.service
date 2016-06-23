@@ -16,7 +16,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run --rm=true \
 -e DOMAIN=$(systemctl show-environment | grep DOMAIN= | cut -d "=" -f 2) \
 -e ENVIRON=$(systemctl show-environment | grep ENVIRON= | cut -d "=" -f 2) \
 -e ETCDCTL_ENDPOINT=${COREOS_PRIVATE_IPV4}:4001 \
-gaiaadm/backup-etcd:18-master ./main.sh -a backup -k /tenants,/webhooks,/clientdetails,/accesstokens'
+gaiaadm/backup-etcd:19-master ./main.sh -a backup -k /tenants,/webhooks,/clientdetails,/accesstokens'
 
 [Install]
 WantedBy=multi-user.target
