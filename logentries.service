@@ -26,7 +26,7 @@ ExecStartPre=/bin/bash -c \
              'if [ -n "$(etcdctl get /logentries.com/$(hostname)/lastlog)" ]; then  \
                 echo "Last log date: $(etcdctl get /logentries.com/$(hostname)/lastlog)"; \
               else \
-                export D="$(date +"%Y-%m-%d %H:%M:%S")"; \
+                export D="$(date +"%F %T")"; \
                 echo "No start date found, collecting logs since $D"; \
                 /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"; true; \
               fi'
@@ -36,10 +36,10 @@ ExecStartPre=/usr/bin/docker run --rm=true -v /opt/bin:/target gaiaadm/volume-to
 
 ExecStart=/bin/bash -c "journalctl --since \"$(etcdctl get /logentries.com/$(hostname)/lastlog)\" -o json --boot -f | /opt/bin/jq -c '{ __REALTIME_TIMESTAMP, DATE_TIME: (.__REALTIME_TIMESTAMP | tonumber / 1000000 | todateiso8601 ), PRIORITY, _UID, _GID, _HOSTNAME, _COMM, _EXE, SYSLOG_IDENTIFIER, _SYSTEMD_UNIT, _PID, MESSAGE }' | awk '{ print \"${LOG_KEY}\",$0; fflush(); }' | ncat --ssl api.logentries.com 20000"
 
-ExecStop=/bin/bash -c 'export D="$(date +"%Y-%m-%d %H:%M:%S")"; \
+ExecStop=/bin/bash -c 'export D="$(date +"%F %T")"; \
                        echo "Setting bookmark to $D"; \
                        /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"'
-ExecStopPost=/bin/bash -c 'export D="$(date +"%Y-%m-%d %H:%M:%S")"; \
+ExecStopPost=/bin/bash -c 'export D="$(date +"%F %T")"; \
                        echo "Setting bookmark to $D"; \
                        /bin/etcdctl set /logentries.com/$(hostname)/lastlog "$D"'
 
