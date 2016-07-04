@@ -44,7 +44,7 @@ ExecStart=/bin/bash -a -c 'docker run  \
 -v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \
 -p 8000:8000 \
 -e SERVICE_NAME=distributor \
-gaiaadm/mr-burns-distributor:96-master'
+gaiaadm/mr-burns-distributor:97-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns-distributor
