@@ -56,7 +56,7 @@ ExecStart=/usr/bin/docker run  \
 -e SERVICE_8080_TAGS=master \
 -e SERVICE_9093_NAME=stsdb \
 -e SERVICE_9093_TAGS=master \
-gaiaadm/sts:124-feature_login_for_admin_ui
+gaiaadm/sts:125-feature_login_for_admin_ui
 
 # Stop
 ExecStop=/usr/bin/docker stop sts
