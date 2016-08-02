@@ -23,25 +23,31 @@ if [[ ! -f /usr/bin/fleetctl ]]; then
   exit -1
 fi
 
+# helper function
+function array_contains_element() {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
 # start fleet unit and wait till 'active' and 'running'
 function start_fleet_unit() {
   fleetctl start $1
-  # skip vault-unseal unit wait (it's a volume container)
-  if [ $1 == "vault-unseal.service" ]; then
+  # do not wait passive_units to activate
+  array_contains_element $1 "${passive_units[@]}"
+  if [ $? -eq 0 ]; then
     return 0
   fi
-  # ACTIVE status is 'active' or 3 min timeout
+  # wait for ACTIVE status is 'active' or 3 min timeout
   local status=0
-  while [ $status -lt 60 ] ;do
-    sleep 3
+  while [ $status -lt 180 ] ;do
+    sleep 1
     if [ "$(fleetctl list-units | grep -cw $1)" -ne 0 ]; then
       x=($(fleetctl list-units | grep -w $1 | awk '{print $3}'))
-      for i in "${x[@]}"; do
-        if [ $i == "active" ]; then
-          status=60
-          break
-        fi
-      done
+      array_contains_element "active" "${x[@]}"
+      if [ $? -eq 0 ]; then
+        status=180
+      fi
     fi
     status=$((status+1))
  done
@@ -49,13 +55,16 @@ function start_fleet_unit() {
 
 
 # submit new/updates fleet units and destroy previous versions, if exist
+# return true, if service updated
 function load_fleet_unit() {
+  local __result=1
   if [[ $(fleetctl list-unit-files | grep -w ${1}) ]]; then
     fleetctl submit ${1} 1&> .tmp
     if cat .tmp | grep -q "differs"; then
       fleetctl destroy ${1}
       fleetctl submit ${1}
       echo "${1} - unit had beed updated"
+      eval $__result=0
     else
       echo "${1} - update is not required"
     fi
@@ -63,7 +72,9 @@ function load_fleet_unit() {
   else
     fleetctl submit ${1}
     echo "${1} - a new unit uploaded"
+    eval $__result=0
   fi
+  return $__result
 }
 
 
@@ -89,25 +100,26 @@ function cleanup_fleet_units() {
 }
 
 
-# deploy = load and start fleet unit
+# deploy = load and start fleet unit, if new unit is loaded or unit is updated
 function deploy_fleet_unit() {
   load_fleet_unit $1
-  start_fleet_unit $1
+  if [ $? -eq 0 ]; then
+    start_fleet_unit $1
+  fi
 }
 
-
-declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service vault-unseal.service result-upload-service.service backup-elastic.aws.service backup-etcd.aws.service)
+# core units to be started first
+declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service result-upload-service.service )
+# all units
 declare -a all_units=(*.service)
-declare -a other_units=(backup-elastic.aws.timer backup-etcd.aws.timer)
+# timer units
+declare -a other_units=( backup-elastic.aws.timer backup-etcd.aws.timer )
+# passive units are started by other units or executed only once
+declare -a passive_units=( backup-elastic.aws.service backup-etcd.aws.service dex-client-config.service vault-unseal.service )
 
 for u in "${all_units[@]}"; do
-  found=1
-  for c in "${core_units[@]}"; do
-    if [ $c == $u ]; then
-      found=0
-    fi
-  done
-  if [[ $found == 1 ]]; then
+  array_contains_element $u "${core_units[@]}"
+  if [ $? -eq 0 ]; then
     # for template add two units
     if [[ $u =~ @.service ]]; then
       other_units+=(${u/@.service/@1.service})
