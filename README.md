@@ -62,5 +62,6 @@ Try to use [Bash Profiler](https://github.com/F-Hauri/bashProfiler) to profile `
 
 Use Bash Profiler to profile `gaia-fleet` deploy:
 ```
-$ bash -c "source profiler.bash; source deploy.sh"
+# WITHOUT SPACE after ;
+$ bash -c "source profiler.sh;source deploy.sh"
 ```

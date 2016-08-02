@@ -35,7 +35,7 @@ function start_fleet_unit() {
   while [ $status -lt 60 ] ;do
     sleep 3
     if [ "$(fleetctl list-units | grep -cw $1)" -ne 0 ]; then
-      x=$(fleetctl list-units | grep -w $1 | awk '{print $3}')
+      x=($(fleetctl list-units | grep -w $1 | awk '{print $3}'))
       for i in "${x[@]}"; do
         if [ $i == "active" ]; then
           status=60

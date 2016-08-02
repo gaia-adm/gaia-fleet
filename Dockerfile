@@ -11,7 +11,9 @@ WORKDIR ${gaia}
 COPY *.service ./
 COPY *.timer ./
 COPY deploy.sh ./
+COPY profile.sh ./
 RUN chmod +x deploy.sh
+RUN chmod +x profile.sh
 
 # install bash
 RUN apk --update add bash \
