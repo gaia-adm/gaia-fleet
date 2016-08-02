@@ -64,7 +64,7 @@ function load_fleet_unit() {
       fleetctl destroy ${1}
       fleetctl submit ${1}
       echo "${1} - unit had beed updated"
-      eval $__result=0
+      __result=0
     else
       echo "${1} - update is not required"
     fi
@@ -72,7 +72,7 @@ function load_fleet_unit() {
   else
     fleetctl submit ${1}
     echo "${1} - a new unit uploaded"
-    eval $__result=0
+    __result=0
   fi
   return $__result
 }
