@@ -14,10 +14,10 @@ To build current image behind corporate proxy use `--build-arg` option (introduc
 Once you have a CoreOS cluster up and running, you will need to deploy `skydns.service` and `registrator.service` to the cluster.
 
 ```
-fleetctl submit skydns.service
-fleetctl submit registrator.service
-fleetctl start skydns
-fleetctl start registrator
+$ fleetctl submit skydns.service
+$ fleetctl submit registrator.service
+$ fleetctl start skydns
+$ fleetctl start registrator
 ```
 
 After you have [SkyDNS](https://github.com/skynetservices/skydns) and [Registrator](https://github.com/gliderlabs/registrator) up and running on each cluster node, you can now deploy and auto-register any other fleet service.
@@ -25,8 +25,7 @@ You do not need to do anything special, while running your service in Docker, be
 
 For example:
 ```
-/usr/bin/docker run --name rabbitmq-%i -p 5672:5672 -p 15672:15672 -e "SERVICE_NAME=rabbitmq-%i" -e "SERVICE_TAGS=master" gaiaadm/rabbitmq:3.5.3-1
-
+$ docker run --name rabbitmq-%i -p 5672:5672 -p 15672:15672 -e "SERVICE_NAME=rabbitmq-%i" -e "SERVICE_TAGS=master" gaiaadm/rabbitmq:3.5.3-1
 ```
 
 ## Deploy and Update Gaia Services on CoreOS cluster
@@ -36,17 +35,17 @@ For example:
 In order to deply and update Gaia services on CoreOS cluster run the command bellow on one of the cluster hosts.
 * For AWS:
 ```
-docker run -it --rm --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:<TAG>
+$ docker run -it --rm --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:<TAG>
 ```
 * For vagrant:
 ```
-docker run -it --rm -e environ=vagrant --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:<TAG>
+$ docker run -it --rm -e environ=vagrant --name=gaiacd -v /usr/bin/fleetctl:/usr/bin/fleetctl gaiaadm/gaia-fleet:<TAG>
 ```
-where <TAG> is something like 561-master.  
+where <TAG> is something like 561-master.
 To watch the deployment progress you can run the following command inside other SSH session on any machine that can conect to CoreOS cluster.
 
 ```
-whatch -n 3 `fleetctl list-unit-files && echo "====================" && fleetctl list-units`
+$ whatch -n 3 `fleetctl list-unit-files && echo "====================" && fleetctl list-units`
 ```
 
 **Note 1**: When gaia-fleet is updated automatically from non-master branches of other repositories, the "latest" tag points to non-master default; in order to run the latest image of master branch, "master" tag should be mentioned explicitely.
@@ -56,3 +55,12 @@ whatch -n 3 `fleetctl list-unit-files && echo "====================" && fleetctl
 ## DNS setup
 
 If you are using [our fork](https://github.com/gaia-adm/coreos-vagrant) of [coreos-vagrant](https://github.com/coreos/coreos-vagrant), you do not need to specify DNS for every docker container you are running. The appropriate DNS server will be setup automatically for you container.
+
+## Profiling gaia-fleet
+
+Try to use [Bash Profiler](https://github.com/F-Hauri/bashProfiler) to profile `deploy.sh` (see documentation for details). `gaia-fleet` Docker image brings also `profiler.bash` script.
+
+Use Bash Profiler to profile `gaia-fleet` deploy:
+```
+$ bash -c "source profiler.bash; source deploy.sh"
+```

@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# debug
-# set -x
+# debug with bash -x deploy.sh
 
 # export FLEETCTL_ENDPOINT: docker host IP and 4001 port
 if [ -z "$FLEETCTL_ENDPOINT" ]; then
-  export FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
+  FLEETCTL_ENDPOINT=http://$(netstat -nr | grep '^0\.0\.0\.0' | awk '{ print $2 }'):4001
+  export FLEETCTL_ENDPOINT=${FLEETCTL_ENDPOINT}
 fi
 
 # get environment from outside: from CLI argument or env variable - for docker
 # run docker on vagrant -e fleetenv=vagrant
 fleetenv=$1
-if [[ -z "${fleetenv}" ]]; then
-  fleetenv=$environ
-fi
 if [[ -z "${fleetenv}" ]]; then
   echo Running on AWS by default
 else
@@ -37,9 +34,9 @@ function start_fleet_unit() {
   local status=0
   while [ $status -lt 60 ] ;do
     sleep 3
-    if [ $(fleetctl list-units | grep -cw $1) != 0 ]; then
+    if [ "$(fleetctl list-units | grep -cw $1)" -ne 0 ]; then
       x=$(fleetctl list-units | grep -w $1 | awk '{print $3}')
-      for i in ${x[@]}; do
+      for i in "${x[@]}"; do
         if [ $i == "active" ]; then
           status=60
           break
@@ -103,20 +100,20 @@ declare -a core_units=( skydns.service registrator.service postgres.vagrant.serv
 declare -a all_units=(*.service)
 declare -a other_units=(backup-elastic.aws.timer backup-etcd.aws.timer)
 
-for u in ${all_units[@]}; do
+for u in "${all_units[@]}"; do
   found=1
-  for c in ${core_units[@]}; do
+  for c in "${core_units[@]}"; do
     if [ $c == $u ]; then
       found=0
     fi
   done
   if [[ $found == 1 ]]; then
     # for template add two units
-    if [[ $u =~ "@.service" ]]; then
+    if [[ $u =~ @.service ]]; then
       other_units+=(${u/@.service/@1.service})
       if [[ $(fleetctl list-machines | grep -v MACHINE  | wc -l) -gt 1 ]]; then
         other_units+=(${u/@.service/@2.service})
-        if [[ $u =~ "es@.service" ]]; then
+        if [[ $u =~ es@.service ]]; then
           other_units+=(${u/@.service/@3.service})
         fi
       fi
@@ -126,10 +123,10 @@ for u in ${all_units[@]}; do
   fi
 done
 
+
 units=( ${core_units[@]} ${other_units[@]} )
 
-
-for unit in ${units[@]}; do
+for unit in "${units[@]}"; do
   echo "depoyment of: $unit"
   case "$unit" in
     *.vagrant.service )

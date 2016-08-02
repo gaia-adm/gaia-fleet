@@ -1,0 +1,7 @@
+.git
+.gitignore
+.idea
+.env
+circle.yml
+README.md
+Dockerfile
