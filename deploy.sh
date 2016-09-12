@@ -12,6 +12,10 @@ fi
 # run docker on vagrant -e fleetenv=vagrant
 fleetenv=$1
 if [[ -z "${fleetenv}" ]]; then
+  fleetenv=${environ}
+fi
+
+if [[ -z "${fleetenv}" ]]; then
   echo Running on AWS by default
 else
   echo Running on ${fleetenv}
