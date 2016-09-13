@@ -123,7 +123,7 @@ declare -a passive_units=( backup-elastic.aws.service backup-etcd.aws.service de
 
 for u in "${all_units[@]}"; do
   array_contains_element $u "${core_units[@]}"
-  if [ $? -eq 0 ]; then
+  if [ $? -eq 1 ]; then
     # for template add two units
     if [[ $u =~ @.service ]]; then
       other_units+=(${u/@.service/@1.service})
