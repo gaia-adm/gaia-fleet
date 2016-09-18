@@ -113,11 +113,13 @@ function deploy_fleet_unit() {
 }
 
 # core units to be started first
-declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service result-upload-service.service )
+declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service )
 # all units
 declare -a all_units=(*.service)
 # timer units
-declare -a other_units=( backup-elastic.aws.timer backup-etcd.aws.timer )
+declare -a timer_units=( backup-elastic.aws.timer backup-etcd.aws.timer )
+# other units
+declare -a other_units=( )
 # passive units are started by other units or executed only once
 declare -a passive_units=( backup-elastic.aws.service backup-etcd.aws.service dex-client-config.service vault-unseal.service )
 
@@ -140,7 +142,7 @@ for u in "${all_units[@]}"; do
 done
 
 
-units=( ${core_units[@]} ${other_units[@]} )
+units=( ${core_units[@]} ${other_units[@]} ${timer_units[@]})
 
 for unit in "${units[@]}"; do
   echo "depoyment of: $unit"
