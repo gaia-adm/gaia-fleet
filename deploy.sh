@@ -113,7 +113,7 @@ function deploy_fleet_unit() {
 }
 
 # core units to be started first
-declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service )
+declare -a core_units=( skydns.service registrator.service postgres.vagrant.service cadvisor.service logentries.service vault.service result-upload-service.service )
 # all units
 declare -a all_units=(*.service)
 # timer units
