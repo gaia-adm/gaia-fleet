@@ -48,7 +48,7 @@ ExecStart=/usr/bin/docker run \
  -e SERVICE_443_NAME=sproxy \
  -e SERVICE_1936_NAME=statsproxy \
  -v /dev/log:/dev/log \
- gaiaadm/haproxy:38-master
+ gaiaadm/haproxy:39-feature_issue_2_gau_fix
 
 # Stop
 ExecStop=/usr/bin/docker stop haproxy
