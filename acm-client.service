@@ -1,0 +1,36 @@
+[Unit]
+Description=Gaia Account Management Client
+Documentation=https://github.com/gaia-adm/gaia-account-management-client
+After=registrator.service
+Wants=registrator.service
+
+[Service]
+TimeoutStartSec=20min
+TimeoutStopSec=15
+KillMode=none
+
+EnvironmentFile=/etc/environment
+
+Restart=on-failure
+RestartSec=20s
+
+ExecStartPre=-/usr/bin/docker stop acmclient
+ExecStartPre=-/usr/bin/docker rm acmclient
+ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
+--name acmclient  \
+-p 8080:8080  \
+-e BACKEND_HOST=acmserver.skydns.local  \
+-e BACKEND_PORT=3000  \
+-e SERVICE_NAME=acmclient  \
+-e SERVICE_TAGS=master  \
+-e LOG_LEVEL=DEBUG  \
+gaiaadm/acmclient:latest'
+
+ExecStop=/usr/bin/docker stop acmclient
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+MachineMetadata=general=true
