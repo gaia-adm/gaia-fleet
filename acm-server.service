@@ -35,7 +35,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e SERVICE_NAME=acmserver  \
 -e SERVICE_TAGS=master  \
 -e LOG_LEVEL=DEBUG  \
-boriska70/acmserver:latest'
+gaiaadm/acmserver:latest'
 
 ExecStop=/usr/bin/docker stop acmserver
 
