@@ -34,10 +34,10 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e SMTP_PASSWORD=$SMTP_PASSWORD  \
 -e SERVICE_NAME=acmserver  \
 -e SERVICE_TAGS=master  \
--e CLIENT_ID=$GOOGLE_CLIENT_ID \
--e CLIENT_PASSWORD=$GOOGLE_CLIENT_PASSWORD \
+-e GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID \
+-e GOOGLE_CLIENT_PASSWORD=$GOOGLE_CLIENT_PASSWORD \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmserver:latest'
+gaiaadm/acmserver:31-feature_acm-integration'
 
 ExecStop=/usr/bin/docker stop acmserver
 
