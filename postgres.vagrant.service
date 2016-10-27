@@ -56,7 +56,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 -e ACM_DB_PASSWORD=${ACM_DB_PASSWORD} \
 -e SERVICE_NAME=postgres \
 -v $(/opt/bin/gaia-get-mount-path.sh postgreData-${ENVIRON}):/postgreData \
-gaiaadm/postgres:6-feature_acm-integration'
+gaiaadm/postgres:7-feature_acm-integration'
 
 # Stop
 ExecStop=/usr/bin/docker stop postgres
