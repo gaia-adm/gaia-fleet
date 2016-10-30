@@ -31,7 +31,7 @@ KillMode=none
 
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
-EnvironmentFile=/etc/env-db
+EnvironmentFile=/etc/env-acm
 
 # Restart policy
 Restart=on-failure
@@ -49,14 +49,14 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --rm=true \
 -p 5432:5432 \
 -e POSTGRES_USER=postgres \
--e POSTGRES_PASSWORD=postgres \
+-e POSTGRES_PASSWORD=${DB_PASSWORD} \
 -e PGDATA=/postgreData/pgdata \
--e ACM_DB_DATABASE=${ACM_DB_DATABASE} \
--e ACM_DB_USER=${ACM_DB_USER} \
+-e ACM_DB_DATABASE=hpe_account_management \
+-e ACM_DB_USER=hpe_account_management \
 -e ACM_DB_PASSWORD=${ACM_DB_PASSWORD} \
 -e SERVICE_NAME=postgres \
 -v $(/opt/bin/gaia-get-mount-path.sh postgreData-${ENVIRON}):/postgreData \
-gaiaadm/postgres:7-feature_acm-integration'
+gaiaadm/postgres:8-feature_acm-integration'
 
 # Stop
 ExecStop=/usr/bin/docker stop postgres
