@@ -37,7 +37,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
 -e GOOGLE_CLIENT_PASSWORD=${GOOGLE_CLIENT_SECRET} \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmserver:33-feature_acm-integration'
+gaiaadm/acmserver:34-feature_acm-integration'
 
 ExecStop=/usr/bin/docker stop acmserver
 
