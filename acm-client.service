@@ -25,7 +25,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e SERVICE_NAME=acmclient  \
 -e SERVICE_TAGS=master  \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmclient:17-feature_acm-integration'
+gaiaadm/acmclient:18-feature_acm-integration'
 
 ExecStop=/usr/bin/docker stop acmclient
 
