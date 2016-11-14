@@ -17,7 +17,7 @@ RestartSec=20s
 
 ExecStartPre=-/usr/bin/docker stop acmclient
 ExecStartPre=-/usr/bin/docker rm acmclient
-ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
+ExecStart=/usr/bin/docker run  \
 --name acmclient  \
 -p 8080:8080  \
 -e BACKEND_HOST=acmserver.skydns.local  \
@@ -26,7 +26,10 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e SERVICE_NAME=acmclient  \
 -e SERVICE_TAGS=master  \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmclient:19-feature_acm-integration'
+gaiaadm/acmclient:20-feature_acm-integration /bin/sh -a -c \
+/bin/rm/ -rf dist && \
+/usr/bin/npm run build && \
+/usr/bin/node ./bin/client'
 
 ExecStop=/usr/bin/docker stop acmclient
 
