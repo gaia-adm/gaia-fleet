@@ -10,6 +10,7 @@ TimeoutStopSec=15
 KillMode=none
 
 EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/env-acm
 
 Restart=on-failure
 RestartSec=20s
@@ -21,11 +22,11 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -p 8080:8080  \
 -e BACKEND_HOST=acmserver.skydns.local  \
 -e BACKEND_PORT=3000  \
--e GOOGLE_REDIRECT_URI=https://acmc.${DOMAIN}/acmc/api/invitations/return.google \
+-e GOOGLE_REDIRECT_URI=${INVITATION_CALLBACK_URL} \
 -e SERVICE_NAME=acmclient  \
 -e SERVICE_TAGS=master  \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmclient:18-feature_acm-integration'
+gaiaadm/acmclient:19-feature_acm-integration'
 
 ExecStop=/usr/bin/docker stop acmclient
 
