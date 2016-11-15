@@ -67,7 +67,7 @@ function load_fleet_unit() {
     if cat .tmp | grep -q "differs"; then
       fleetctl destroy ${1}
       fleetctl submit ${1}
-      echo "${1} - unit had beed updated"
+      echo "${1} - unit had beed updated ====="
       __result=0
     else
       echo "${1} - update is not required"
