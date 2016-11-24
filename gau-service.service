@@ -51,7 +51,7 @@ ExecStart=/bin/bash -a -c 'ENVIRON=$(systemctl show-environment | grep ENVIRON= 
 -e SERVICE_TAGS=master \
 -e NODE_ENV=$ENVIRON \
 -e LOG_LEVEL=DEBUG \
-gaiaadm/gau:51-feature_acm-integration'
+gaiaadm/gau:52-feature_acm-integration'
 
 # Stop
 ExecStop=/usr/bin/docker stop gau
