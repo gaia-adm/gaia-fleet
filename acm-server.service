@@ -23,14 +23,14 @@ ExecStartPre=/bin/bash -a -c '/usr/bin/docker run  \
 -e DB_DATABASE=hpe_account_management  \
 -e DB_USER=hpe_account_management  \
 -e DB_PASSWORD=${ACM_DB_PASSWORD}  \
-gaiaadm/acmserver:60-feature_acm-integration knex migrate:latest --env=production'
+gaiaadm/acmserver:61-feature_acm-integration knex migrate:latest --env=production'
 ExecStartPre=-/bin/bash -a -c '/usr/bin/docker run  \
 --rm  \
 -e DB_HOST=${DB_ALIAS}  \
 -e DB_DATABASE=hpe_account_management  \
 -e DB_USER=hpe_account_management  \
 -e DB_PASSWORD=${ACM_DB_PASSWORD}  \
-gaiaadm/acmserver:60-feature_acm-integration knex seed:run --env=production'
+gaiaadm/acmserver:61-feature_acm-integration knex seed:run --env=production'
 ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 --name acmserver  \
 -p 3100:3000  \
@@ -53,7 +53,7 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run  \
 -e GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
 -e GOOGLE_CLIENT_PASSWORD=${GOOGLE_CLIENT_SECRET} \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmserver:60-feature_acm-integration'
+gaiaadm/acmserver:61-feature_acm-integration'
 
 ExecStop=/usr/bin/docker stop acmserver
 
