@@ -52,7 +52,7 @@ ExecStart=/usr/bin/docker run  \
 -e SERVICE_8080_TAGS=master \
 -e SERVICE_9093_NAME=stsdb \
 -e SERVICE_9093_TAGS=master \
-gaiaadm/sts:150-feature_acm-integration
+gaiaadm/sts:151-master
 
 # Stop
 ExecStop=/usr/bin/docker stop sts
