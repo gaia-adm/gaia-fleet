@@ -14,7 +14,7 @@
 
 [Unit]
 Description=PostgreSQL
-Documentation=https://hub.docker.com/_/postgres/
+Documentation=https://github.com/gaia-adm/docker-postgres
 
 After=registrator.service
 Wants=registrator.service
@@ -31,6 +31,7 @@ KillMode=none
 
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/env-acm
 
 # Restart policy
 Restart=on-failure
@@ -48,11 +49,14 @@ ExecStart=/bin/bash -a -c '/usr/bin/docker run \
 --rm=true \
 -p 5432:5432 \
 -e POSTGRES_USER=postgres \
--e POSTGRES_PASSWORD=postgres \
+-e POSTGRES_PASSWORD=${DB_PASSWORD} \
 -e PGDATA=/postgreData/pgdata \
+-e ACM_DB_DATABASE=hpe_account_management \
+-e ACM_DB_USER=hpe_account_management \
+-e ACM_DB_PASSWORD=${ACM_DB_PASSWORD} \
 -e SERVICE_NAME=postgres \
 -v $(/opt/bin/gaia-get-mount-path.sh postgreData-${ENVIRON}):/postgreData \
-gaiaadm/postgres'
+gaiaadm/postgres:11-master'
 
 # Stop
 ExecStop=/usr/bin/docker stop postgres
@@ -64,4 +68,5 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 MachineMetadata=general=true
+
 
