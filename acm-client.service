@@ -26,7 +26,7 @@ ExecStart=/usr/bin/docker run  \
 -e SERVICE_NAME=acmclient  \
 -e SERVICE_TAGS=master  \
 -e LOG_LEVEL=DEBUG  \
-gaiaadm/acmclient:27-feature_acm-integration /bin/sh -a -c \
+gaiaadm/acmclient:28-master /bin/sh -a -c \
 '/bin/rm -rf dist && \
 /usr/bin/npm run build && \
 /usr/bin/node ./bin/client'
