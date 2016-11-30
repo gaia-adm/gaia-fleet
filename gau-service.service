@@ -51,7 +51,7 @@ ExecStart=/bin/bash -a -c 'ENVIRON=$(systemctl show-environment | grep ENVIRON= 
 -e SERVICE_TAGS=master \
 -e NODE_ENV=$ENVIRON \
 -e LOG_LEVEL=DEBUG \
-gaiaadm/gau:43-master'
+gaiaadm/gau'
 
 # Stop
 ExecStop=/usr/bin/docker stop gau
