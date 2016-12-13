@@ -13,7 +13,7 @@ Restart=on-failure
 RestartSec=20s
 ExecStartPre=-/usr/bin/docker kill kibana
 ExecStartPre=-/usr/bin/docker rm kibana
-ExecStart=/bin/bash -a -c '/usr/bin/docker run  --name kibana  -e ELASTICSEARCH_URL=http://es.skydns.local:9200  -p 5601:5601  -e SERVICE_NAME=kibana  -e SERVICE_TAGS=master  gaiaadm/kibana:4-master'
+ExecStart=/bin/bash -a -c '/usr/bin/docker run  --name kibana  -e ELASTICSEARCH_URL=http://es.skydns.local:9200  -p 5601:5601  -e SERVICE_NAME=kibana  -e SERVICE_TAGS=master  gaiaadm/kibana:5-feature_update2to5'
 ExecStop=/usr/bin/docker stop kibana
 
 [Install]
