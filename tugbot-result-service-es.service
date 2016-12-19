@@ -13,8 +13,8 @@
 # limitations under the License.
 
 [Unit]
-Description=Continuous Testing Framework for Docker
-Documentation=https://github.com/gaia-docker/tugbot
+Description=Publish test results & events into elasticsearch
+Documentation=https://github.com/gaia-docker/tugbot-result-service-es
 
 After=registrator.service
 Wants=registrator.service
@@ -38,17 +38,18 @@ RestartSec=20s
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker stop tugbot-run
-ExecStartPre=-/usr/bin/docker rm tugbot-run
+ExecStartPre=-/usr/bin/docker stop tugbot-rses
+ExecStartPre=-/usr/bin/docker rm tugbot-rses
 
 ExecStart=/bin/bash -a -c 'docker run \
---name tugbot-run \
--v /var/run/docker.sock:/var/run/docker.sock \
--e TUGBOT_WEBHOOKS=http://tugbot-rses.skydns.local:8081/events \
-gaiadocker/tugbot:156-master'
+--name tugbot-rses \
+-p 8081:8081 \
+-e SERVICE_NAME=tugbot-rses \
+-e ELASTICSEARCH_URL=http://es.skydns.local:9200 \
+gaiadocker/tugbot-result-service-es:40-master'
 
 # Stop
-ExecStop=/usr/bin/docker stop tugbot-run
+ExecStop=/usr/bin/docker stop tugbot-rses
 
 [Install]
 WantedBy=multi-user.target

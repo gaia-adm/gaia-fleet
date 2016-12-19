@@ -28,6 +28,17 @@ if (( $branch_missing > 0 )); then
 	curl -XPOST -H "Authorization: token ${GITHUB_API_TOKEN}" -H "Content-Type: application/json" -H "Accept: application/vnd.github.v3+json" -d '{"ref": "refs/heads/'${branch}'", "sha": "'$master_sha'"}' https://api.github.com/repos/gaia-adm/gaia-fleet/git/refs
 fi
 
-f_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}?ref=${branch}" | jq .sha | tr -d '"') && \
-f_64=$(openssl enc -base64 -A -in <(sed "s/gaiaadm\/${service_name}/gaiaadm\/${service_name}:${build_num}-${branch}/g" ${service_file})) && \
+f_sha=$(curl --fail -S -L "https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}?ref=${branch}" | jq .sha | tr -d '"')
+
+# set version for gaiaadm images
+grep gaiaadm\/${service_name} ${service_file}
+if [ $(echo $?) -eq "0" ]; then
+  f_64=$(openssl enc -base64 -A -in <(sed "s/gaiaadm\/${service_name}/gaiaadm\/${service_name}:${build_num}-${branch}/g" ${service_file}))
+fi
+# set version for gaiadocker images
+grep gaiadocker\/${service_name} ${service_file}
+if [ $(echo $?) -eq "0" ]; then
+  f_64=$(openssl enc -base64 -A -in <(sed "s/gaiadocker\/${service_name}/gaiadocker\/${service_name}:${build_num}-${branch}/g" ${service_file}))
+fi
+
 curl --fail -S -i -X PUT -H "Authorization: token ${GITHUB_API_TOKEN}" -d "{\"path\": \"${service_file}\", \"message\": \"updating ${service_file} with the new image tag: ${build_num}-${branch}\", \"content\": \"${f_64}\", \"sha\": \"${f_sha}\", \"branch\": \"${branch}\"}" https://api.github.com/repos/gaia-adm/gaia-fleet/contents/${service_file}

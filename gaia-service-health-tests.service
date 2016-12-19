@@ -13,16 +13,12 @@
 # limitations under the License.
 
 [Unit]
-Description=Continuous Testing Framework for Docker
-Documentation=https://github.com/gaia-docker/tugbot
-
-After=registrator.service
-Wants=registrator.service
+Description= Gaia Service Health tests
+Documentation=https://github.com/gaia-adm/gaia-service-health-tests
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
 # Large start timeout is to allow for pulling down Docker images from Registry
-TimeoutStartSec=20min
 TimeoutStopSec=15
 
 # Change killmode from "control-group" to "none" to let Docker remove
@@ -32,27 +28,19 @@ KillMode=none
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
 
-# Restart policy
-Restart=on-failure
-RestartSec=20s
-
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker stop tugbot-run
-ExecStartPre=-/usr/bin/docker rm tugbot-run
+ExecStartPre=-/usr/bin/docker stop svchealth
+ExecStartPre=-/usr/bin/docker rm svchealth # It's important to remove the container so tugbot won't have two versions of the same container to run
 
-ExecStart=/bin/bash -a -c 'docker run \
---name tugbot-run \
--v /var/run/docker.sock:/var/run/docker.sock \
--e TUGBOT_WEBHOOKS=http://tugbot-rses.skydns.local:8081/events \
-gaiadocker/tugbot:156-master'
+# We use default gaia.es.url presented in gaia.properties file inside the test container
+ExecStart=/usr/bin/docker run --name svchealth gaiaadm/gaia-service-health-tests:4-master
 
 # Stop
-ExecStop=/usr/bin/docker stop tugbot-run
+ExecStop=/usr/bin/docker stop svchealth
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
 MachineMetadata=general=true

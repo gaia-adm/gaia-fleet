@@ -75,7 +75,7 @@ function load_fleet_unit() {
     rm .tmp
   else
     fleetctl submit ${1}
-    echo "${1} - a new unit uploaded"
+    echo "${1} - a new unit uploaded >>>>>"
     __result=0
   fi
   return $__result
