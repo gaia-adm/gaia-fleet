@@ -70,7 +70,7 @@ function load_fleet_unit() {
       echo "${1} - unit had beed updated ====="
       __result=0
     else
-      echo "${1} - update is not required"
+      echo "${1} - update is not required >>>>>"
     fi
     rm .tmp
   else
