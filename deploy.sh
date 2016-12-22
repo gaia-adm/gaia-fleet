@@ -70,12 +70,12 @@ function load_fleet_unit() {
       echo "${1} - unit had beed updated ====="
       __result=0
     else
-      echo "${1} - update is not required >>>>>"
+      echo "${1} - update is not required"
     fi
     rm .tmp
   else
     fleetctl submit ${1}
-    echo "${1} - a new unit uploaded"
+    echo "${1} - a new unit uploaded >>>>>"
     __result=0
   fi
   return $__result
