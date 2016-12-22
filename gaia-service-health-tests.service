@@ -34,7 +34,7 @@ ExecStartPre=-/usr/bin/docker stop svchealth
 ExecStartPre=-/usr/bin/docker rm svchealth # It's important to remove the container so tugbot won't have two versions of the same container to run
 
 # We use default gaia.es.url presented in gaia.properties file inside the test container
-ExecStart=/usr/bin/docker run --name svchealth gaiaadm/gaia-service-health-tests:4-master
+ExecStart=/usr/bin/docker run --name svchealth gaiaadm/gaia-service-health-tests:5-master
 
 # Stop
 ExecStop=/usr/bin/docker stop svchealth
